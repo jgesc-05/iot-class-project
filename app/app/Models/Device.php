@@ -29,6 +29,11 @@ class Device extends Model
         'sample_interval_s' => 'integer',
     ];
 
+    protected $attributes = [
+        'status' => 'active',
+        'sample_interval_s' => 15,
+    ];
+
     protected $hidden = [
         'api_key_hash',
     ];
