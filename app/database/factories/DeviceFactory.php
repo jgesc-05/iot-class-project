@@ -2,22 +2,31 @@
 
 namespace Database\Factories;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-/**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Device>
- */
 class DeviceFactory extends Factory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
     public function definition(): array
     {
         return [
-            //
+            'user_id' => User::factory(),
+            'name' => fake()->words(2, true),
+            'device_id' => 'dev-'.fake()->unique()->numerify('######'),
+            'type' => fake()->randomElement(['real', 'twin', 'api', 'dataset']),
+            'measurement' => fake()->randomElement([
+                'temperatura_ambiente',
+                'humedad_ambiente',
+                'humedad_sustrato',
+                'co2',
+                'luminosidad',
+                'ph_sustrato',
+                'ec',
+            ]),
+            'unit' => '°C',
+            'api_key_hash' => hash('sha256', fake()->uuid()),
+            'sample_interval_s' => 15,
+            'metadata' => null,
         ];
     }
 }
