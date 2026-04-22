@@ -1,0 +1,71 @@
+# === Laravel / PHP ===
+/app/vendor
+/app/node_modules
+/app/public/build
+/app/public/hot
+/app/public/storage
+/app/storage/*.key
+/app/storage/pail
+/app/storage/app/public
+/app/storage/framework/cache
+/app/storage/framework/sessions
+/app/storage/framework/testing
+/app/storage/framework/views
+/app/storage/logs
+/app/bootstrap/cache
+/app/.phpunit.result.cache
+/app/.phpunit.cache
+/app/auth.json
+/app/.env
+/app/.env.backup
+/app/.env.production
+/app/.phpactor.json
+/app/Homestead.json
+/app/Homestead.yaml
+/app/npm-debug.log
+/app/yarn-error.log
+
+# === Node / Frontend ===
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# === Python / Simuladores ===
+simulators/.venv/
+simulators/__pycache__/
+simulators/**/__pycache__/
+simulators/*.pyc
+simulators/.env
+simulators/logs/
+
+# === macOS ===
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# === Editores ===
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# === Docker ===
+# No ignoramos docker-compose.yml ni los Dockerfiles,
+# pero sí datos locales sensibles
+docker-compose.override.yml
+
+# === Archivos temporales y credenciales ===
+.env
+.env.local
+.env.*.local
+*.log
+/tmp
+/docs/DEV_CREDENTIALS.md
+
+# === No ignorar esto (explícito por seguridad) ===
+!.env.example
+!.gitkeep
