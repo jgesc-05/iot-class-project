@@ -1,0 +1,13 @@
+.git
+.gitignore
+.idea
+.vscode
+node_modules
+vendor
+.env
+.env.*
+docs
+simulators
+README.md
+Dockerfile
+docker-compose.yml
