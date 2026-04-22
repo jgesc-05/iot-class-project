@@ -8,6 +8,7 @@ services:
     working_dir: /var/www/html
     volumes:
       - ./app:/var/www/html
+      - ./docs:/var/www/docs
     networks:
       - iot_net
     depends_on:
