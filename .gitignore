@@ -69,3 +69,10 @@ docker-compose.override.yml
 # === No ignorar esto (explícito por seguridad) ===
 !.env.example
 !.gitkeep
+
+# Simuladores Python
+simulators/.env
+simulators/.venv/
+simulators/__pycache__/
+simulators/*.log
+simulators/logs/
