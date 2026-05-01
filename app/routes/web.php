@@ -14,6 +14,11 @@ Route::get('/devices', \App\Livewire\DeviceList::class)
     ->name('devices.index');
 
 
+Route::get('/devices/{deviceId}', App\Livewire\DeviceDetail::class)
+    ->middleware('auth')
+    ->name('devices.show');
+
+
 Route::view('profile', 'profile')
     ->middleware(['auth'])
     ->name('profile');
