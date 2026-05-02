@@ -18,6 +18,11 @@ Route::get('/devices/{deviceId}', App\Livewire\DeviceDetail::class)
     ->middleware('auth')
     ->name('devices.show');
 
+//Vista de reglas
+Route::get('/rules', App\Livewire\RulesManager::class)
+    ->middleware('auth')
+    ->name('rules.index');
+
 
 Route::view('profile', 'profile')
     ->middleware(['auth'])

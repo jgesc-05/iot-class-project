@@ -20,11 +20,11 @@ Route::patch('/devices/{device_id}/commands/{command_id}/ack', [CommandControlle
 Route::post('/commands', [CommandController::class, 'store']);
 
 // Alertas (dia 8)
-Route::post('/alert-rules', [AlertController::class, 'storeRule']);
-Route::get('/alert-rules', [AlertController::class, 'listRules']);
-Route::delete('/alert-rules/{id}', [AlertController::class, 'disableRule']);
-Route::get('/alerts', [AlertController::class, 'listAlerts']);
-Route::patch('/alerts/{id}/resolve', [AlertController::class, 'resolveAlert']);
+Route::post('/alert-rules', [AlertController::class, 'storeRule'])->name('alert-rules.store');
+Route::get('/alert-rules', [AlertController::class, 'listRules'])->name('alert-rules.list');
+Route::delete('/alert-rules/{id}', [AlertController::class, 'disableRule'])->name('alert-rules.disable');
+Route::get('/alerts', [AlertController::class, 'listAlerts'])->name('alerts.list');
+Route::patch('/alerts/{id}/resolve', [AlertController::class, 'resolveAlert'])->name('alerts.resolve');
 
 // Ruta de ejemplo de Sanctum
 Route::get('/user', function (Request $request) {
