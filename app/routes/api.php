@@ -10,8 +10,9 @@ use Illuminate\Support\Facades\Route;
 // Ingesta de metricas (dia 3)
 Route::post('/metrics', [MetricController::class, 'store']);
 
-// Lectura publica de la ultima metrica (dia 6)
+// Lectura publica del estado de un dispositivo
 Route::get('/devices/{device_id}/latest', [DeviceController::class, 'latest']);
+Route::get('/devices/{device_id}/metrics', [DeviceController::class, 'metrics']);
 
 // Comandos (dia 7)
 Route::get('/devices/{device_id}/commands', [CommandController::class, 'pending']);
