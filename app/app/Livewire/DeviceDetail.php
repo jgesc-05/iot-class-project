@@ -2,16 +2,43 @@
 
 namespace App\Livewire;
 
+use App\Models\Device;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Livewire\Component;
 
 class DeviceDetail extends Component
 {
-    public $device;
+    public Device $device;
+    public ?int $newInterval = null;
 
-    public function mount($deviceId)
+    public function mount($deviceId): void
     {
-        $this->device = \App\Models\Device::findOrFail($deviceId);
+        $this->device = Device::findOrFail($deviceId);
+    }
+
+    /**
+     * Trae la ultima metrica registrada para este dispositivo.
+     * Devuelve null si aun no hay metricas.
+     */
+    public function getLatestMetricProperty()
+    {
+        return DB::table('metrics')
+            ->where('device_id', $this->device->device_id)
+            ->orderByDesc('time')
+            ->first();
+    }
+
+    /**
+     * Trae los ultimos 20 comandos enviados a este dispositivo.
+     */
+    public function getRecentCommandsProperty()
+    {
+        return DB::table('commands')
+            ->where('device_id', $this->device->id)
+            ->orderByDesc('created_at')
+            ->limit(20)
+            ->get();
     }
 
     public function render()
@@ -21,8 +48,6 @@ class DeviceDetail extends Component
 
     public function sendCommand(string $type, array $payload)
     {
-        // Consume el endpoint POST /api/commands para mantener consistencia
-        // con el contrato de comandos (validacion centralizada, audit log, etc).
         $response = Http::post(url('/api/commands'), [
             'device_id' => $this->device->device_id,
             'type'      => $type,
