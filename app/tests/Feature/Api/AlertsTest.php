@@ -188,3 +188,39 @@ test('PATCH resolve marca la alerta como resuelta', function () {
     $alert->refresh();
     expect($alert->resolved_at)->not->toBeNull();
 });
+
+test('metrica dentro de rango auto-resuelve alerta pendiente', function () {
+    $rule = AlertRule::create([
+        'device_id' => $this->device->id,
+        'name' => 'Temp alta',
+        'measurement' => 'temperatura_ambiente',
+        'min_threshold' => 18.0,
+        'max_threshold' => 28.0,
+        'enabled' => true,
+    ]);
+
+    // Crear alerta pendiente manualmente (simula que se disparo antes)
+    $alert = Alert::create([
+        'alert_rule_id' => $rule->id,
+        'device_id' => $this->device->id,
+        'value' => 35.0,
+        'triggered_at' => now()->subMinutes(5),
+    ]);
+
+    expect($alert->resolved_at)->toBeNull();
+
+    // Enviar metrica DENTRO del rango (debe auto-resolver)
+    $response = $this->postJson('/api/metrics', [
+        'device_id' => 'test-device-alert',
+        'api_key' => $this->plainKey,
+        'measurement' => 'temperatura_ambiente',
+        'value' => 22.0,
+        'unit' => '°C',
+        'timestamp' => now()->toIso8601String(),
+    ]);
+
+    $response->assertStatus(201);
+
+    $alert->refresh();
+    expect($alert->resolved_at)->not->toBeNull();
+});

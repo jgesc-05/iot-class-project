@@ -45,12 +45,10 @@ class MetricController extends Controller
             ], 403);
         }
 
-        // Determinar el timestamp: si el cliente lo mando, usarlo; si no, ahora.
         $time = isset($data['timestamp'])
             ? Carbon::parse($data['timestamp'])
             : now();
 
-        // Insertar en la hypertable.
         DB::table('metrics')->insert([
             'time'      => $time,
             'device_id' => $device->device_id,
@@ -58,11 +56,11 @@ class MetricController extends Controller
             'metadata'  => isset($data['metadata']) ? json_encode($data['metadata']) : null,
         ]);
 
-        // NUEVO dia 8: evaluar reglas activas y crear alertas si corresponde.
-        // Envuelto en try/catch para graceful degradation: si la evaluacion
-        // falla por un bug, la metrica se guarda igual y solo logueamos.
+        // Evaluar reglas activas: dispara alertas si valor fuera de rango,
+        // las auto-resuelve si valor vuelve dentro de rango.
+        // Graceful degradation: si falla, la metrica se guarda igual.
         try {
-            $this->evaluateRules($device, $data['measurement'], (float) $data['value']);
+            $this->evaluateRules($device, $data['measurement'], (float) $data['value'], $time);
         } catch (\Throwable $e) {
             Log::error('Error evaluando reglas de alerta', [
                 'device_id' => $device->device_id,
@@ -81,10 +79,18 @@ class MetricController extends Controller
 
     /**
      * Evalua reglas activas para el dispositivo y measurement dados.
-     * Si una regla detecta valor fuera de rango Y no hay alerta pendiente
-     * de la misma regla, crea una nueva alerta.
+     *
+     * - Si valor esta fuera de rango Y no hay alerta pendiente: crea alerta nueva.
+     * - Si valor esta dentro de rango Y hay alerta pendiente: la resuelve.
+     * - En cualquier otro caso, no hace nada.
+     *
+     * Esto modela el ciclo de vida natural de una alerta: se dispara cuando
+     * aparece la condicion, se resuelve cuando desaparece. El operador puede
+     * intervenir manualmente con PATCH /api/alerts/{id}/resolve si quiere
+     * resolver antes (o cerrar una alerta sin que el dispositivo haya
+     * vuelto al rango).
      */
-    private function evaluateRules(Device $device, string $measurement, float $value): void
+    private function evaluateRules(Device $device, string $measurement, float $value, Carbon $time): void
     {
         $rules = AlertRule::where('device_id', $device->id)
             ->where('measurement', $measurement)
@@ -92,25 +98,26 @@ class MetricController extends Controller
             ->get();
 
         foreach ($rules as $rule) {
-            if (!$rule->isOutOfRange($value)) {
-                continue;
-            }
-
-            // Deduplicacion: si ya hay alerta pendiente de esta regla, no creamos otra.
-            $hasPending = Alert::where('alert_rule_id', $rule->id)
+            $openAlert = Alert::where('alert_rule_id', $rule->id)
                 ->whereNull('resolved_at')
-                ->exists();
+                ->first();
 
-            if ($hasPending) {
-                continue;
+            if ($rule->isOutOfRange($value)) {
+                // Fuera de rango: crear alerta nueva solo si no hay una pendiente
+                if (!$openAlert) {
+                    Alert::create([
+                        'alert_rule_id' => $rule->id,
+                        'device_id' => $device->id,
+                        'value' => $value,
+                        'triggered_at' => $time,
+                    ]);
+                }
+            } else {
+                // Dentro de rango: auto-resolver alerta pendiente si la habia
+                if ($openAlert) {
+                    $openAlert->resolve($time);
+                }
             }
-
-            Alert::create([
-                'alert_rule_id' => $rule->id,
-                'device_id' => $device->id,
-                'value' => $value,
-                'triggered_at' => now(),
-            ]);
         }
     }
 }
