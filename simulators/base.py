@@ -9,7 +9,7 @@ from datetime import datetime, timezone
 
 load_dotenv()
 
-API_URL = os.getenv("API_URL", "http://localhost:8000/")
+API_URL = os.getenv("API_URL", "http://localhost:8000/api").rstrip("/")
 
 class Sensor:
     def __init__(self, device_id, api_key, measurement, base, amplitude, noise, unit='', interval=5, offset=0.0, active=True):

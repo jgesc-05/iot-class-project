@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use Illuminate\Support\Facades\Http;
 use Livewire\Component;
 
 class DeviceDetail extends Component
@@ -20,11 +21,19 @@ class DeviceDetail extends Component
 
     public function sendCommand(string $type, array $payload)
     {
-        \App\Models\Command::create([
-            'device_id' => $this->device->id,
+        // Consume el endpoint POST /api/commands para mantener consistencia
+        // con el contrato de comandos (validacion centralizada, audit log, etc).
+        $response = Http::post(url('/api/commands'), [
+            'device_id' => $this->device->device_id,
             'type'      => $type,
             'payload'   => $payload,
         ]);
-        session()->flash('ok', 'Comando enviado');
+
+        if ($response->successful()) {
+            session()->flash('ok', 'Comando enviado');
+        } else {
+            $error = $response->json('message') ?? 'Error desconocido';
+            session()->flash('error', "No se pudo enviar el comando: {$error}");
+        }
     }
 }
