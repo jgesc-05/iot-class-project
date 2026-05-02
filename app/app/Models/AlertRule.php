@@ -13,6 +13,7 @@ class AlertRule extends Model
 
     protected $fillable = [
         'device_id',
+        'name',
         'measurement',
         'min_threshold',
         'max_threshold',
