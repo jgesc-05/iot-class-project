@@ -9,7 +9,9 @@ class AlertList extends Component
 {
     public function resolve($id)
     {
-        Http::patch(route('alerts.resolve', $id));
+        \App\Models\Alert::findOrFail($id)->update([
+            'resolved_at' => now(),
+        ]);
     }
 
     public function render()

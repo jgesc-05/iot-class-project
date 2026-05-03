@@ -59,6 +59,15 @@
                     @endswitch
                 </span>
                 <span>{{ $item['label'] }}</span>
+                @if($item['icon'] === 'bell')
+                    @php $pendingCount = \App\Models\Alert::whereNull('resolved_at')->count(); @endphp
+                    @if($pendingCount > 0)
+                        <span style="background:#ef4444; color:white; border-radius:9999px;
+                     padding:1px 7px; font-size:11px; margin-left:auto;">
+                            {{ $pendingCount }}
+                        </span>
+                    @endif
+                @endif
             </a>
         @endforeach
     </nav>
