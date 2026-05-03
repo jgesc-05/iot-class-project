@@ -30,6 +30,8 @@ class RulesManager extends Component
         $this->validate([
             'name'      => 'required',
             'device_id' => 'required|exists:devices,id',
+            //Anadido por ser considerado obligatorio en el modelo
+            'measurement' => 'required',
         ]);
 
         \App\Models\AlertRule::create([

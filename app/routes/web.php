@@ -19,9 +19,14 @@ Route::get('/devices/{deviceId}', App\Livewire\DeviceDetail::class)
     ->name('devices.show');
 
 //Vista de reglas
-Route::get('/rules', App\Livewire\RulesManager::class)
+Route::get('/alert-rules', App\Livewire\RulesManager::class)
     ->middleware('auth')
     ->name('rules.index');
+
+//Vista de marcar como resuelta la alerta
+Route::get('/alerts', App\Livewire\AlertList::class)
+    ->middleware('auth')
+    ->name('alerts.index');
 
 
 Route::view('profile', 'profile')
