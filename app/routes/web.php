@@ -13,6 +13,11 @@ Route::get('/devices', \App\Livewire\DeviceList::class)
     ->middleware(['auth', 'verified'])
     ->name('devices.index');
 
+//Vista para crear dispositivo
+Route::get('/devices/create', App\Livewire\DeviceCreate::class)
+    ->middleware('auth')
+    ->name('devices.create');
+
 
 Route::get('/devices/{deviceId}', App\Livewire\DeviceDetail::class)
     ->middleware('auth')
@@ -27,7 +32,6 @@ Route::get('/alert-rules', App\Livewire\RulesManager::class)
 Route::get('/alerts', App\Livewire\AlertList::class)
     ->middleware('auth')
     ->name('alerts.index');
-
 
 Route::view('profile', 'profile')
     ->middleware(['auth'])

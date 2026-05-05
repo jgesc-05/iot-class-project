@@ -1,4 +1,14 @@
 <div class="p-6 space-y-6">
+    {{-- Vista que muestra la key una vez --}}
+    @if(session('new_api_key'))
+        <div class="bg-yellow-100 border border-yellow-400 p-4 rounded">
+            <strong>Guarda esta API key ahora.</strong> No podrás verla de nuevo:
+            <code class="block mt-2 bg-white p-2 break-all">
+                {{ session('new_api_key') }}
+            </code>
+        </div>
+    @endif
+
 
     {{-- Header con info del dispositivo --}}
     <div class="bg-white shadow rounded-lg p-6">
