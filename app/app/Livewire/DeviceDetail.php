@@ -48,7 +48,10 @@ class DeviceDetail extends Component
 
     public function sendCommand(string $type, array $payload)
     {
-        $response = Http::post(url('/api/commands'), [
+        // Usamos hostname interno de Docker (web = nginx). url() devolveria
+        // localhost:8000 que no es accesible desde el contenedor app (php-fpm).
+        $baseUrl = env('INTERNAL_API_URL', 'http://web');
+        $response = Http::post($baseUrl . '/api/commands', [
             'device_id' => $this->device->device_id,
             'type'      => $type,
             'payload'   => $payload,
