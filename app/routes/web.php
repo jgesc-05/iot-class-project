@@ -33,6 +33,11 @@ Route::get('/alerts', App\Livewire\AlertList::class)
     ->middleware('auth')
     ->name('alerts.index');
 
+//Vista de historial con filtros (Dia 10 A.10.1)
+Route::get('/history', App\Livewire\History::class)
+    ->middleware('auth')
+    ->name('history.index');
+
 Route::view('profile', 'profile')
     ->middleware(['auth'])
     ->name('profile');

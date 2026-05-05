@@ -119,3 +119,102 @@ test('GET metrics devuelve 422 si from es timestamp invalido', function () {
     $response->assertStatus(422);
     $response->assertJsonPath('error', 'invalid_timestamp');
 });
+
+test('GET stats devuelve avg/min/max/count correctamente', function () {
+    $now = now();
+    DB::table('metrics')->insert([
+        ['time' => $now->copy()->subHour(),       'device_id' => 'test-device-latest', 'value' => 10.0, 'metadata' => null],
+        ['time' => $now->copy()->subMinutes(50),  'device_id' => 'test-device-latest', 'value' => 20.0, 'metadata' => null],
+        ['time' => $now->copy()->subMinutes(40),  'device_id' => 'test-device-latest', 'value' => 30.0, 'metadata' => null],
+        ['time' => $now->copy()->subMinutes(30),  'device_id' => 'test-device-latest', 'value' => 40.0, 'metadata' => null],
+        ['time' => $now->copy()->subMinutes(20),  'device_id' => 'test-device-latest', 'value' => 50.0, 'metadata' => null],
+    ]);
+
+    // 5 valores: 10, 20, 30, 40, 50
+    // avg = 30, min = 10, max = 50, count = 5
+    $response = $this->getJson('/api/devices/test-device-latest/stats');
+
+    $response->assertStatus(200);
+    $response->assertJsonPath('stats.avg', 30);
+    $response->assertJsonPath('stats.min', 10);
+    $response->assertJsonPath('stats.max', 50);
+    $response->assertJsonPath('stats.count', 5);
+});
+
+test('GET stats devuelve null/0 si no hay metricas en el rango', function () {
+    $response = $this->getJson('/api/devices/test-device-latest/stats');
+
+    $response->assertStatus(200);
+    $response->assertJsonPath('stats.avg', null);
+    $response->assertJsonPath('stats.min', null);
+    $response->assertJsonPath('stats.max', null);
+    $response->assertJsonPath('stats.count', 0);
+});
+
+test('GET stats devuelve 422 si from es timestamp invalido', function () {
+    $response = $this->getJson('/api/devices/test-device-latest/stats?from=fecha-fea');
+
+    $response->assertStatus(422);
+    $response->assertJsonPath('error', 'invalid_timestamp');
+});
+
+test('GET history agrupa metricas por bucket con avg/min/max', function () {
+    // Usamos timestamps absolutos para que el test sea determinista.
+    // time_bucket() agrupa por minutos absolutos del reloj (:00, :05, :10),
+    // no por offsets relativos a now().
+    $base = \Carbon\Carbon::parse('2026-01-15 12:00:00');
+    DB::table('metrics')->insert([
+        // Bucket 12:00 → avg(10, 20) = 15
+        ['time' => $base->copy()->addMinutes(0)->addSeconds(0),  'device_id' => 'test-device-latest', 'value' => 10.0, 'metadata' => null],
+        ['time' => $base->copy()->addMinutes(2)->addSeconds(30), 'device_id' => 'test-device-latest', 'value' => 20.0, 'metadata' => null],
+        // Bucket 12:05 → avg(30, 40) = 35
+        ['time' => $base->copy()->addMinutes(5)->addSeconds(15), 'device_id' => 'test-device-latest', 'value' => 30.0, 'metadata' => null],
+        ['time' => $base->copy()->addMinutes(8)->addSeconds(45), 'device_id' => 'test-device-latest', 'value' => 40.0, 'metadata' => null],
+    ]);
+
+    // Pedir bucket de 5 minutos sobre el rango que cubre las 4 metricas
+    $response = $this->getJson('/api/devices/test-device-latest/history?bucket=5m&' . http_build_query([
+        'from' => $base->copy()->subMinutes(10)->toIso8601String(),
+        'to' => $base->copy()->addMinutes(20)->toIso8601String(),
+    ]));
+
+    $response->assertStatus(200);
+    $response->assertJsonPath('bucket', '5 minutes');
+    expect($response->json('count'))->toBe(2);
+
+    $history = $response->json('history');
+    expect($history[0]['avg'])->toBe(15);
+    expect($history[0]['min'])->toBe(10);
+    expect($history[0]['max'])->toBe(20);
+    expect($history[1]['avg'])->toBe(35);
+});
+
+test('GET history elige bucket auto segun tamano del rango', function () {
+    // Rango chico (1h) → debe usar 5 minutos
+    $response = $this->getJson('/api/devices/test-device-latest/history?bucket=auto&' . http_build_query([
+        'from' => now()->subHour()->toIso8601String(),
+        'to' => now()->toIso8601String(),
+    ]));
+    $response->assertJsonPath('bucket', '5 minutes');
+
+    // Rango medio (3 dias) → debe usar 1 hora
+    $response = $this->getJson('/api/devices/test-device-latest/history?bucket=auto&' . http_build_query([
+        'from' => now()->subDays(3)->toIso8601String(),
+        'to' => now()->toIso8601String(),
+    ]));
+    $response->assertJsonPath('bucket', '1 hour');
+
+    // Rango grande (30 dias) → debe usar 1 dia
+    $response = $this->getJson('/api/devices/test-device-latest/history?bucket=auto&' . http_build_query([
+        'from' => now()->subDays(30)->toIso8601String(),
+        'to' => now()->toIso8601String(),
+    ]));
+    $response->assertJsonPath('bucket', '1 day');
+});
+
+test('GET history devuelve 422 si bucket es invalido', function () {
+    $response = $this->getJson('/api/devices/test-device-latest/history?bucket=2y');
+
+    $response->assertStatus(422);
+    $response->assertJsonPath('error', 'invalid_bucket');
+});
