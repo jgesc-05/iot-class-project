@@ -44,5 +44,6 @@
             </div>
         </div>
         @stack('scripts')
+    <x-toasts/>
     </body>
 </html>

@@ -50,6 +50,7 @@ class RulesManager extends Component
     public function disable($id)
     {
         \App\Models\AlertRule::findOrFail($id)->update(['enabled' => false]);
+        session()->flash('ok', 'Regla desactivada');
     }
 
 

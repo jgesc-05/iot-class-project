@@ -40,6 +40,7 @@ class DeviceCreate extends Component
             'sample_interval_s' => $this->sample_interval,
         ]);
         session()->flash('new_api_key', $plainKey);
+        session()->flash('ok', 'Dispositivo creado correctamente');
         return redirect()->route('devices.show', $device);
     }
 
