@@ -13,6 +13,8 @@ Route::post('/metrics', [MetricController::class, 'store']);
 // Lectura publica del estado de un dispositivo
 Route::get('/devices/{device_id}/latest', [DeviceController::class, 'latest']);
 Route::get('/devices/{device_id}/metrics', [DeviceController::class, 'metrics']);
+Route::get('/devices/{device_id}/stats', [DeviceController::class, 'stats']);
+Route::get('/devices/{device_id}/history', [DeviceController::class, 'history']);
 
 // Comandos (dia 7)
 Route::get('/devices/{device_id}/commands', [CommandController::class, 'pending']);
