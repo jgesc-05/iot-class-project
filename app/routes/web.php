@@ -43,6 +43,11 @@ Route::get('/history', App\Livewire\History::class)
     ->middleware('auth')
     ->name('history.index');
 
+//Vista de dashboards de Grafana embebidos (Dia 13)
+Route::get('/dashboards', App\Livewire\Dashboards::class)
+    ->middleware('auth')
+    ->name('dashboards.index');
+
 Route::view('profile', 'profile')
     ->middleware(['auth'])
     ->name('profile');
