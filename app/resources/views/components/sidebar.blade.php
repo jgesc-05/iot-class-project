@@ -1,7 +1,7 @@
 {{-- Sidebar de navegación lateral - Día 9 (A.9.2) --}}
 {{-- Convive con la nav top de Breeze. Resalta el ítem activo. --}}
 
-<aside class="w-64 bg-white border-r border-gray-200 min-h-screen p-4">
+<aside class="w-64 bg-white border-r border-stone-200 min-h-screen p-4">
     <nav class="space-y-1">
         @php
             $items = [
@@ -25,8 +25,8 @@
                     : request()->is($item['pattern'] ?? '');
 
                 $base = 'flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md transition';
-                $activeClasses = 'bg-indigo-50 text-indigo-700';
-                $inactiveClasses = 'text-gray-700 hover:bg-gray-100 hover:text-gray-900';
+                $activeClasses = 'bg-green-50 text-green-700';
+                $inactiveClasses = 'text-gray-600 hover:bg-stone-100 hover:text-gray-900';
             @endphp
 
             <a href="{{ $href }}" class="{{ $base }} {{ $isActive ? $activeClasses : $inactiveClasses }}">

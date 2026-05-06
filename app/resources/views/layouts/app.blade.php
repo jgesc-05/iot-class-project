@@ -24,7 +24,7 @@
         <script src="/js/history-chart.js"></script>
     </head>
     <body class="font-sans antialiased">
-        <div class="min-h-screen bg-gray-100">
+        <div class="min-h-screen bg-stone-50">
             <livewire:layout.navigation />
 
             {{-- Layout principal: sidebar + contenido (Día 9 A.9.2) --}}
