@@ -5,7 +5,8 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ config('app.name', 'Laravel') }}</title>
+        <title>{{ config('app.name', 'Greenhouse Monitor') }}</title>
+        <meta name="description" content="Plataforma de monitoreo IoT para invernadero - UNAB">
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
@@ -23,7 +24,7 @@
         <script src="/js/history-chart.js"></script>
     </head>
     <body class="font-sans antialiased">
-        <div class="min-h-screen bg-gray-100">
+        <div class="min-h-screen bg-stone-50">
             <livewire:layout.navigation />
 
             {{-- Layout principal: sidebar + contenido (Día 9 A.9.2) --}}

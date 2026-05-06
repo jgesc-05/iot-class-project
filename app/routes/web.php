@@ -2,7 +2,12 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::view('/', 'welcome');
+// Redirige la landing segun autenticacion
+Route::get('/', function () {
+    return auth()->check()
+        ? redirect('/dashboard')
+        : redirect('/login');
+});
 
 Route::get('/dashboard', \App\Livewire\Dashboard::class)
     ->middleware(['auth', 'verified'])
@@ -37,6 +42,11 @@ Route::get('/alerts', App\Livewire\AlertList::class)
 Route::get('/history', App\Livewire\History::class)
     ->middleware('auth')
     ->name('history.index');
+
+//Vista de dashboards de Grafana embebidos (Dia 13)
+Route::get('/dashboards', App\Livewire\Dashboards::class)
+    ->middleware('auth')
+    ->name('dashboards.index');
 
 Route::view('profile', 'profile')
     ->middleware(['auth'])

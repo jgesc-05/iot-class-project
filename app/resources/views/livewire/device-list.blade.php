@@ -1,34 +1,34 @@
-<div>  {{-- elemento raíz único --}}
-    <div class="p-6">
-        {{-- Mensajes flash --}}
-        @if(session('ok'))
-            <div style="background:#d1fae5; color:#065f46; padding:12px; border-radius:6px; margin-bottom:16px;">
-                {{ session('ok') }}
-            </div>
-        @endif
-        @if(session('error'))
-            <div style="background:#fee2e2; color:#991b1b; padding:12px; border-radius:6px; margin-bottom:16px;">
-                {{ session('error') }}
-            </div>
-        @endif
+<div>
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            Dispositivos
+        </h2>
+    </x-slot>
 
-        <div class="flex justify-between items-center mb-4">
-            <h1 class="text-2xl font-bold">Dispositivos</h1>
+    <div class="py-6 px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center mb-6">
+            <p class="text-sm text-gray-500">{{ count($devices) }} dispositivos registrados</p>
             <a href="{{ route('devices.create') }}"
-               class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
+               class="bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-green-700 transition">
                 + Crear dispositivo
             </a>
         </div>
 
-        <div wire:poll.5s class="grid grid-cols-3 gap-4">
+        <div wire:poll.5s class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             @foreach($devices as $row)
                 <a href="{{ route('devices.show', $row['device']->id) }}"
-                   class="p-4 border rounded hover:shadow-md transition block">
-                    <h3 class="font-semibold">{{ $row['device']->name }}</h3>
-                    <div class="text-3xl mt-2">
-                        {{ $row['last']->value ?? '—' }} {{ $row['device']->unit }}
+                   class="bg-white border border-stone-200 rounded-lg p-5 hover:border-green-300 hover:shadow-sm transition block">
+                    <div class="flex items-start justify-between mb-2">
+                        <h3 class="font-semibold text-gray-800">{{ $row['device']->name }}</h3>
+                        <span class="text-xs px-2 py-0.5 rounded-full {{ $row['device']->type === 'sensor' ? 'bg-sky-50 text-sky-700' : 'bg-amber-50 text-amber-700' }}">
+                            {{ $row['device']->type }}
+                        </span>
                     </div>
-                    <div class="text-sm text-gray-500 mt-1">
+                    <div class="text-3xl font-bold text-gray-900 mt-3">
+                        {{ $row['last']->value ?? '—' }}
+                        <span class="text-base font-normal text-gray-400">{{ $row['device']->unit }}</span>
+                    </div>
+                    <div class="text-xs text-gray-400 mt-2">
                         {{ $row['last']?->time
                             ? \Carbon\Carbon::parse($row['last']->time)->diffForHumans()
                             : 'sin datos' }}

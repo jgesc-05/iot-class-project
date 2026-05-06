@@ -1,7 +1,7 @@
 <div class="p-6 space-y-6">
 
     {{-- Header --}}
-    <div class="bg-white shadow rounded-lg p-6">
+    <div class="bg-white border border-stone-200 rounded-lg p-6">
         <h1 class="text-2xl font-bold text-gray-900">Historial de métricas</h1>
         <p class="mt-1 text-sm text-gray-500">
             Consulta las métricas de un dispositivo en un período específico.
@@ -21,7 +21,7 @@
     @endif
 
     {{-- Form de filtros --}}
-    <div class="bg-white shadow rounded-lg p-6">
+    <div class="bg-white border border-stone-200 rounded-lg p-6">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
 
             {{-- Select de dispositivo --}}
@@ -31,7 +31,7 @@
                 </label>
                 <select id="device-select"
                         wire:model.live="deviceId"
-                        class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                        class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
                     <option value="">— Selecciona uno —</option>
                     @foreach ($this->devices as $d)
                         <option value="{{ $d->device_id }}">
@@ -49,7 +49,7 @@
                 <input id="from-date"
                        type="datetime-local"
                        wire:model.live.debounce.500ms="fromDate"
-                       class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                       class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
             </div>
 
             {{-- Date picker hasta --}}
@@ -60,7 +60,7 @@
                 <input id="to-date"
                        type="datetime-local"
                        wire:model.live.debounce.500ms="toDate"
-                       class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                       class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
             </div>
 
         </div>
@@ -108,28 +108,28 @@
 
             {{-- Cards: avg, min, max, count --}}
             <div x-show="hasData" class="grid grid-cols-2 md:grid-cols-4 gap-4" style="display: none;">
-                <div class="bg-white shadow rounded-lg p-4">
+                <div class="bg-white border border-stone-200 rounded-lg p-4">
                     <p class="text-xs font-medium text-gray-500 uppercase tracking-wider">Promedio</p>
-                    <p class="mt-1 text-3xl font-bold text-indigo-600">
+                    <p class="mt-1 text-3xl font-bold text-green-700">
                         <span x-text="format(stats.avg)"></span>
                         <span class="text-base text-gray-500" x-text="unit"></span>
                     </p>
                 </div>
-                <div class="bg-white shadow rounded-lg p-4">
+                <div class="bg-white border border-stone-200 rounded-lg p-4">
                     <p class="text-xs font-medium text-gray-500 uppercase tracking-wider">Mínimo</p>
                     <p class="mt-1 text-3xl font-bold text-blue-600">
                         <span x-text="format(stats.min)"></span>
                         <span class="text-base text-gray-500" x-text="unit"></span>
                     </p>
                 </div>
-                <div class="bg-white shadow rounded-lg p-4">
+                <div class="bg-white border border-stone-200 rounded-lg p-4">
                     <p class="text-xs font-medium text-gray-500 uppercase tracking-wider">Máximo</p>
                     <p class="mt-1 text-3xl font-bold text-red-600">
                         <span x-text="format(stats.max)"></span>
                         <span class="text-base text-gray-500" x-text="unit"></span>
                     </p>
                 </div>
-                <div class="bg-white shadow rounded-lg p-4">
+                <div class="bg-white border border-stone-200 rounded-lg p-4">
                     <p class="text-xs font-medium text-gray-500 uppercase tracking-wider">Métricas</p>
                     <p class="mt-1 text-3xl font-bold text-gray-700" x-text="stats.count"></p>
                 </div>
@@ -145,7 +145,7 @@
         </div>
 
         {{-- Grafico de historial (Chart.js consume /api/devices/{id}/history) --}}
-        <div class="bg-white shadow rounded-lg p-6"
+        <div class="bg-white border border-stone-200 rounded-lg p-6"
              x-data="historyChart()"
              x-init="init()"
              wire:ignore>
@@ -174,7 +174,7 @@
 
         {{-- Tabla paginada de metricas crudas --}}
         @if ($this->metrics)
-            <div class="bg-white shadow rounded-lg p-6">
+            <div class="bg-white border border-stone-200 rounded-lg p-6">
                 <div class="flex items-center justify-between mb-4">
                     <h2 class="text-sm font-medium text-gray-500 uppercase tracking-wider">
                         Métricas detalladas

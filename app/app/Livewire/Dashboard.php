@@ -2,19 +2,20 @@
 
 namespace App\Livewire;
 
+use App\Models\Alert;
+use App\Models\Device;
 use Livewire\Component;
 
+// Pagina principal /dashboard con resumen general del invernadero
 class Dashboard extends Component
 {
     public function render()
     {
-        $url = config('services.grafana.url');
-        $uid = config('services.grafana.uid');
-
-            $baseUrl = rtrim($url, '/');
-            $iframeUrl = "{$baseUrl}/d-solo/{$uid}?orgId=1&panelId=1";
-
-        return view('livewire.dashboard', compact('iframeUrl'))
-            ->layout('layouts.app');
+        return view('livewire.dashboard', [
+            'totalDevices'  => Device::count(),
+            'sensors'       => Device::where('type', 'sensor')->count(),
+            'actuators'     => Device::where('type', 'actuator')->count(),
+            'pendingAlerts' => Alert::whereNull('resolved_at')->count(),
+        ])->layout('layouts.app');
     }
 }
