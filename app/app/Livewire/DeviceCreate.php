@@ -9,36 +9,65 @@ class DeviceCreate extends Component
 {
     public $name = '';
     public $unit = '';
+    public $customUnit = '';
     public $measurement = '';
     public $type = '';
     public $sample_interval = 0;
 
-    public $measurements = [];
-    public $types = [];
+    public array $measurements = [
+        'temperature',
+        'humidity',
+        'soil_moisture',
+        'light',
+        'co2',
+        'ph',
+        'pressure',
+    ];
 
-    //Mandar datos al formulario
-    public function mount()
+    public array $types = [
+        'real',
+        'twin',
+        'api',
+        'dataset',
+    ];
+
+    public array $units = [
+        '°C',
+        '°F',
+        '%',
+        'ppm',
+        'lux',
+        'hPa',
+        'pH',
+        'V',
+        'mA',
+    ];
+
+    public function save()
     {
-        $this->measurements = Device::where('user_id', auth()->id())
-            ->distinct()->pluck('measurement');
+        $finalUnit = $this->unit === '__custom__' ? $this->customUnit : $this->unit;
+        $this->unit = $finalUnit;
 
-        $this->types = Device::where('user_id', auth()->id())
-            ->distinct()->pluck('type');
-    }
+        $this->validate([
+            'name'            => 'required|string|max:100',
+            'type'            => 'required|in:real,twin,api,dataset',
+            'measurement'     => 'required|string|max:64',
+            'unit'            => 'required|string|max:20',
+            'sample_interval' => 'required|integer|min:1',
+        ]);
 
-    //Crear el dispositivo
-    public function save() {
         $plainKey = 'dk_' . bin2hex(random_bytes(16));
         $device = Device::create([
-            'user_id' => auth()->id(),
-            'name' => $this->name,
-            'device_id' => 'dev-' . uniqid(),
-            'type' => $this->type,
-            'measurement' => $this->measurement,
-            'unit' => $this->unit,
-            'api_key_hash' => hash('sha256', $plainKey),
+            'user_id'           => auth()->id(),
+            'name'              => $this->name,
+            'device_id'         => 'dev-' . uniqid(),
+            'type'              => $this->type,
+            'measurement'       => $this->measurement,
+            'unit'              => $this->unit,
+            'api_key_hash'      => hash('sha256', $plainKey),
             'sample_interval_s' => $this->sample_interval,
         ]);
+
         session()->flash('new_api_key', $plainKey);
         session()->flash('ok', 'Dispositivo creado correctamente');
         return redirect()->route('devices.show', $device);

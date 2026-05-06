@@ -19,6 +19,17 @@
             </div>
         @endif
 
+        {{-- Errores de validacion --}}
+        @if ($errors->any())
+            <div class="p-4 rounded-lg text-sm bg-red-50 text-red-800 border border-red-200">
+                <ul class="list-disc list-inside space-y-1">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
         {{-- Formulario de creacion --}}
         <div class="bg-white border border-stone-200 rounded-lg p-6">
             <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wide mb-4">Crear nueva regla</h3>
@@ -30,33 +41,29 @@
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Dispositivo</label>
-                    <select wire:model="device_id"
+                    <select wire:model.live="device_id"
                             class="w-full border border-stone-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
                         <option value="">-- Selecciona --</option>
                         @foreach($devices as $device)
-                            <option value="{{ $device->device_id }}">{{ $device->name }}</option>
+                            <option value="{{ $device->device_id }}">{{ $device->name }} ({{ $device->measurement }})</option>
                         @endforeach
                     </select>
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Medicion</label>
-                    <select wire:model="measurement"
-                            class="w-full border border-stone-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
-                        <option value="">-- Selecciona --</option>
-                        @foreach($measurements as $m)
-                            <option value="{{ $m }}">{{ $m }}</option>
-                        @endforeach
-                    </select>
+                    <input type="text" wire:model="measurement" readonly
+                           class="w-full border border-stone-300 rounded-lg px-3 py-2 text-sm bg-stone-50 text-gray-600">
+                    <p class="text-xs text-gray-400 mt-1">Se asigna automaticamente segun el dispositivo</p>
                 </div>
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Minimo</label>
-                        <input type="number" wire:model="min_threshold" placeholder="Opcional"
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Minimo <span class="text-gray-400 font-normal">(al menos uno obligatorio)</span></label>
+                        <input type="number" step="any" wire:model="min_threshold" placeholder="Ej: 10"
                                class="w-full border border-stone-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Maximo</label>
-                        <input type="number" wire:model="max_threshold" placeholder="Opcional"
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Maximo <span class="text-gray-400 font-normal">(al menos uno obligatorio)</span></label>
+                        <input type="number" step="any" wire:model="max_threshold" placeholder="Ej: 35"
                                class="w-full border border-stone-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
                     </div>
                 </div>
@@ -106,6 +113,11 @@
                                 <button wire:click="disable({{ $rule['id'] }})"
                                         class="bg-red-500 hover:bg-red-600 text-white text-xs px-3 py-1.5 rounded-lg font-medium transition">
                                     Desactivar
+                                </button>
+                            @else
+                                <button wire:click="enable({{ $rule['id'] }})"
+                                        class="bg-green-600 hover:bg-green-700 text-white text-xs px-3 py-1.5 rounded-lg font-medium transition">
+                                    Activar
                                 </button>
                             @endif
                         </td>

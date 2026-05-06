@@ -14,26 +14,33 @@ class RulesManager extends Component
     public $min_threshold = null;
     public $max_threshold = null;
     public $devices = [];
-    public $measurements = [];
-
-
 
     public function mount()
     {
-        $this->devices = Device::where('user_id', auth()->id())
+        $this->devices = Device::orderBy('name')
             ->get(['id', 'name', 'device_id', 'measurement']);
+    }
 
-        $this->measurements = Device::where('user_id', auth()->id())
-            ->distinct()->pluck('measurement');
+    public function updatedDeviceId()
+    {
+        $device = collect($this->devices)->firstWhere('device_id', $this->device_id);
+        $this->measurement = $device['measurement'] ?? '';
     }
 
     public function save()
     {
         $this->validate([
-            'name'        => 'required',
-            'device_id'   => 'required',
-            'measurement' => 'required',
+            'name'          => 'required|string|max:200',
+            'device_id'     => 'required|string',
+            'measurement'   => 'required|string|max:64',
+            'min_threshold' => 'nullable|numeric',
+            'max_threshold' => 'nullable|numeric',
         ]);
+
+        if ($this->min_threshold === null && $this->max_threshold === null) {
+            session()->flash('error', 'Debes definir al menos un umbral (minimo o maximo).');
+            return;
+        }
 
         $response = Http::post(env('INTERNAL_API_URL') . '/api/alert-rules', [
             'name'          => $this->name,
@@ -43,7 +50,6 @@ class RulesManager extends Component
             'max_threshold' => $this->max_threshold,
             'enabled'       => true,
         ]);
-
 
         if ($response->successful()) {
             session()->flash('ok', 'Regla creada');
@@ -61,6 +67,17 @@ class RulesManager extends Component
             session()->flash('ok', 'Regla desactivada');
         } else {
             session()->flash('error', 'Error al desactivar');
+        }
+    }
+
+    public function enable($id)
+    {
+        $response = Http::patch(env('INTERNAL_API_URL') . "/api/alert-rules/{$id}/enable");
+
+        if ($response->successful()) {
+            session()->flash('ok', 'Regla activada');
+        } else {
+            session()->flash('error', 'Error al activar');
         }
     }
 

@@ -20,7 +20,16 @@
                    class="bg-white border border-stone-200 rounded-lg p-5 hover:border-green-300 hover:shadow-sm transition block">
                     <div class="flex items-start justify-between mb-2">
                         <h3 class="font-semibold text-gray-800">{{ $row['device']->name }}</h3>
-                        <span class="text-xs px-2 py-0.5 rounded-full {{ $row['device']->type === 'sensor' ? 'bg-sky-50 text-sky-700' : 'bg-amber-50 text-amber-700' }}">
+                        @php
+                            $typeColors = match($row['device']->type) {
+                                'real'    => 'bg-green-50 text-green-700',
+                                'twin'    => 'bg-sky-50 text-sky-700',
+                                'api'     => 'bg-amber-50 text-amber-700',
+                                'dataset' => 'bg-purple-50 text-purple-700',
+                                default   => 'bg-gray-100 text-gray-600',
+                            };
+                        @endphp
+                        <span class="text-xs px-2 py-0.5 rounded-full {{ $typeColors }}">
                             {{ $row['device']->type }}
                         </span>
                     </div>

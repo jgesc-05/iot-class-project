@@ -122,7 +122,7 @@
 
     {{-- Enlace a historial completo --}}
     <div class="text-center">
-        <a href="/history?device_id={{ $device->device_id }}"
+        <a href="/history?device={{ $device->device_id }}"
            class="inline-flex items-center gap-2 text-sm font-medium text-green-700 hover:text-green-800 transition">
             Ver historial completo
             <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">

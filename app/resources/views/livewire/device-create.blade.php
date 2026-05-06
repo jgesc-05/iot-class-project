@@ -18,9 +18,19 @@
 
         <div class="bg-white border border-stone-200 rounded-lg p-6 space-y-4">
 
+            @if ($errors->any())
+                <div class="p-4 rounded-lg text-sm bg-red-50 text-red-800 border border-red-200">
+                    <ul class="list-disc list-inside space-y-1">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Nombre del dispositivo</label>
-                <input type="text" wire:model="name" placeholder="Ej: sensor-temp-a" required
+                <input type="text" wire:model="name" placeholder="Ej: sensor-temp-a"
                        class="w-full border border-stone-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
             </div>
 
@@ -29,9 +39,10 @@
                 <select wire:model="type"
                         class="w-full border border-stone-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
                     <option value="">-- Selecciona un tipo --</option>
-                    @foreach($types as $type)
-                        <option value="{{ $type }}">{{ $type }}</option>
-                    @endforeach
+                    <option value="real">Real (dispositivo fisico)</option>
+                    <option value="twin">Twin (gemelo digital)</option>
+                    <option value="api">API (fuente externa)</option>
+                    <option value="dataset">Dataset (datos historicos)</option>
                 </select>
             </div>
 
@@ -48,13 +59,23 @@
 
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Unidad</label>
-                <input type="text" wire:model="unit" placeholder="Ej: °C, %, ppm"
-                       class="w-full border border-stone-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                <select wire:model="unit"
+                        class="w-full border border-stone-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                    <option value="">-- Selecciona una unidad --</option>
+                    @foreach($units as $u)
+                        <option value="{{ $u }}">{{ $u }}</option>
+                    @endforeach
+                    <option value="__custom__">Otra (personalizar)</option>
+                </select>
+                @if($unit === '__custom__')
+                    <input type="text" wire:model="customUnit" placeholder="Escribe la unidad"
+                           class="mt-2 w-full border border-stone-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                @endif
             </div>
 
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Intervalo de muestreo (segundos)</label>
-                <input type="number" wire:model="sample_interval" placeholder="Ej: 30"
+                <input type="number" wire:model="sample_interval" placeholder="Ej: 30" min="1"
                        class="w-full border border-stone-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
             </div>
 
