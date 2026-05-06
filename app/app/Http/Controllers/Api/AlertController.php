@@ -85,6 +85,25 @@ class AlertController extends Controller
     }
 
     /**
+     * PATCH /api/alert-rules/{id}/enable
+     *
+     * Reactiva una regla deshabilitada. Idempotente.
+     */
+    public function enableRule(int $id): Response
+    {
+        $rule = AlertRule::find($id);
+
+        if (!$rule) {
+            $this->jsonError(404, 'rule_not_found',
+                "La regla con id {$id} no existe.");
+        }
+
+        $rule->update(['enabled' => true]);
+
+        return response()->noContent();
+    }
+
+    /**
      * GET /api/alerts?status=pending|resolved|all&limit=50
      *
      * Lista las alertas filtradas por status.

@@ -9,7 +9,7 @@ class DeviceList extends Component
 {
     public function render()
     {
-        $devices = Device::where('user_id', auth()->id())->get()
+        $devices = Device::all()
             ->map(fn($d) => [
                 'device' => $d,
                 'last' => \DB::table('metrics')
