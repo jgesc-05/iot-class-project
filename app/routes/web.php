@@ -2,7 +2,12 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::view('/', 'welcome');
+// Redirige la landing segun autenticacion
+Route::get('/', function () {
+    return auth()->check()
+        ? redirect('/dashboard')
+        : redirect('/login');
+});
 
 Route::get('/dashboard', \App\Livewire\Dashboard::class)
     ->middleware(['auth', 'verified'])
