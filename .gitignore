@@ -76,3 +76,4 @@ simulators/.venv/
 simulators/__pycache__/
 simulators/*.log
 simulators/logs/
+.local/
