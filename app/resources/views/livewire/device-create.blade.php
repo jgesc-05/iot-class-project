@@ -1,15 +1,15 @@
 <div class="p-6">
-
-
-    @if (session('ok') || session('error'))
-        <div x-data="{show: true}" x-show="show"
-             x-init="setTimeout(() => show = false, 3000)"
-             class="fixed top-4 right-4 p-4 rounded shadow-lg
-                {{ session('ok') ? 'bg-green-100' : 'bg-red-100' }}">
-            {{ session('ok') ?? session('error') }}
+    {{-- Mensajes flash --}}
+    @if(session('ok'))
+        <div style="background:#d1fae5; color:#065f46; padding:12px; border-radius:6px; margin-bottom:16px;">
+            {{ session('ok') }}
         </div>
     @endif
-
+    @if(session('error'))
+        <div style="background:#fee2e2; color:#991b1b; padding:12px; border-radius:6px; margin-bottom:16px;">
+            {{ session('error') }}
+        </div>
+    @endif
     {{-- Formulario --}}
     <input type="text" wire:model="name" placeholder="Nombre del dispositivo" required
            style="border:1px solid #ccc; padding:8px; border-radius:6px; width:100%; margin-bottom:12px;">

@@ -1,4 +1,17 @@
+
 <div wire:poll.5s class="p-6">
+    {{-- Mensajes flash --}}
+    @if(session('ok'))
+        <div style="background:#d1fae5; color:#065f46; padding:12px; border-radius:6px; margin-bottom:16px;">
+            {{ session('ok') }}
+        </div>
+    @endif
+    @if(session('error'))
+        <div style="background:#fee2e2; color:#991b1b; padding:12px; border-radius:6px; margin-bottom:16px;">
+            {{ session('error') }}
+        </div>
+    @endif
+
     <h2 style="font-size:18px; font-weight:600; margin-bottom:16px;">
         Alertas pendientes
     </h2>
@@ -18,22 +31,22 @@
         @forelse($alerts as $alert)
             <tr>
                 <td style="padding:10px; border:1px solid #e5e7eb;">
-                    {{ $alert->alertRule->name ?? 'Regla sin nombre' }}
+                    {{ $alert['rule_name'] ?? 'Regla sin nombre' }}
                 </td>
                 <td style="padding:10px; border:1px solid #e5e7eb;">
-                    {{ $alert->device->name ?? '—' }}
+                    {{ $alert['device_id'] ?? '—' }}
                 </td>
                 <td style="padding:10px; border:1px solid #e5e7eb;">
-                    {{ $alert->alertRule->measurement ?? '—' }}
+                    {{ $alert['measurement'] ?? '—' }}
                 </td>
                 <td style="padding:10px; border:1px solid #e5e7eb;">
-                    {{ $alert->value }}
+                    {{ $alert['value'] }}
                 </td>
                 <td style="padding:10px; border:1px solid #e5e7eb;">
-                    {{ \Carbon\Carbon::parse($alert->triggered_at)->diffForHumans() }}
+                    {{ \Carbon\Carbon::parse($alert['triggered_at'])->diffForHumans() }}
                 </td>
                 <td style="padding:10px; border:1px solid #e5e7eb;">
-                    <button wire:click="resolve({{ $alert->id }})"
+                    <button wire:click="resolve({{ $alert['id'] }})"
                             style="background:#3b82f6; color:white; padding:6px 12px; border-radius:4px; border:none; cursor:pointer;">
                         Marcar como resuelta
                     </button>

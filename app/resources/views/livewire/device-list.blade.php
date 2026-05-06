@@ -1,5 +1,17 @@
 <div>  {{-- elemento raíz único --}}
     <div class="p-6">
+        {{-- Mensajes flash --}}
+        @if(session('ok'))
+            <div style="background:#d1fae5; color:#065f46; padding:12px; border-radius:6px; margin-bottom:16px;">
+                {{ session('ok') }}
+            </div>
+        @endif
+        @if(session('error'))
+            <div style="background:#fee2e2; color:#991b1b; padding:12px; border-radius:6px; margin-bottom:16px;">
+                {{ session('error') }}
+            </div>
+        @endif
+
         <div class="flex justify-between items-center mb-4">
             <h1 class="text-2xl font-bold">Dispositivos</h1>
             <a href="{{ route('devices.create') }}"

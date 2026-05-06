@@ -19,7 +19,7 @@
             style="border:1px solid #ccc; padding:8px; border-radius:6px; width:100%; margin-bottom:12px;">
         <option value="">— Selecciona un dispositivo —</option>
         @foreach($devices as $device)
-            <option value="{{ $device->id }}">{{ $device->name }}</option>
+            <option value="{{ $device->device_id }}">{{ $device->name }}</option>
         @endforeach
     </select>
 

@@ -46,8 +46,11 @@ class DeviceDetail extends Component
         return view('livewire.device-detail')->layout('layouts.app');
     }
 
-    public function sendCommand(string $type, array $payload)
+    public function sendCommand(string $type, array $payload = [])
     {
+        if ($type === 'set_interval') {
+            $payload = ['seconds' => (int) $this->newInterval];
+        }
         // Usamos hostname interno de Docker (web = nginx). url() devolveria
         // localhost:8000 que no es accesible desde el contenedor app (php-fpm).
         $baseUrl = env('INTERNAL_API_URL', 'http://web');
@@ -56,6 +59,7 @@ class DeviceDetail extends Component
             'type'      => $type,
             'payload'   => $payload,
         ]);
+
 
         if ($response->successful()) {
             session()->flash('ok', 'Comando enviado');

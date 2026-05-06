@@ -9,17 +9,23 @@ class AlertList extends Component
 {
     public function resolve($id)
     {
-        \App\Models\Alert::findOrFail($id)->update([
-            'resolved_at' => now(),
-        ]);
+        $response = Http::patch(env('INTERNAL_API_URL') . "/api/alerts/{$id}/resolve");
+
+        if ($response->successful())
+        {
+            session()->flash('ok', 'Alerta resuelta');
+        }
+        else
+        {
+            session()->flash('error', 'Error al resolver la alerta');
+        }
     }
 
     public function render()
     {
-        $alerts = Alert::with(['alertRule', 'device'])
-            ->whereNull('resolved_at')
-            ->orderByDesc('triggered_at')
-            ->get();
+        $response = Http::get(env('INTERNAL_API_URL') . "/api/alerts");
+
+        $alerts = $response->successful() ? $response->json('alerts') : [];
 
         return view('livewire.alert-list', compact('alerts'))
             ->layout('layouts.app');

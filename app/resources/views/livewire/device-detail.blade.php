@@ -112,7 +112,7 @@
                        wire:model="newInterval"
                        placeholder="Segundos"
                        class="border border-gray-300 rounded px-3 py-2 text-sm w-32">
-                <button wire:click="sendCommand('set_interval', {seconds: newInterval})"
+                <button wire:click="sendCommand('set_interval')"
                         class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded text-sm font-medium transition">
                     Aplicar intervalo
                 </button>

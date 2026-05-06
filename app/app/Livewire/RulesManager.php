@@ -16,6 +16,8 @@ class RulesManager extends Component
     public $devices = [];
     public $measurements = [];
 
+
+
     public function mount()
     {
         $this->devices = Device::where('user_id', auth()->id())
@@ -28,13 +30,12 @@ class RulesManager extends Component
     public function save()
     {
         $this->validate([
-            'name'      => 'required',
-            'device_id' => 'required|exists:devices,id',
-            //Anadido por ser considerado obligatorio en el modelo
+            'name'        => 'required',
+            'device_id'   => 'required',
             'measurement' => 'required',
         ]);
 
-        \App\Models\AlertRule::create([
+        $response = Http::post(env('INTERNAL_API_URL') . '/api/alert-rules', [
             'name'          => $this->name,
             'device_id'     => $this->device_id,
             'measurement'   => $this->measurement,
@@ -43,28 +44,33 @@ class RulesManager extends Component
             'enabled'       => true,
         ]);
 
-        session()->flash('ok', 'Regla creada');
-        $this->reset(['name', 'device_id', 'measurement', 'min_threshold', 'max_threshold']);
+
+        if ($response->successful()) {
+            session()->flash('ok', 'Regla creada');
+            $this->reset(['name', 'device_id', 'measurement', 'min_threshold', 'max_threshold']);
+        } else {
+            session()->flash('error', 'Error al crear la regla');
+        }
     }
 
     public function disable($id)
     {
-        \App\Models\AlertRule::findOrFail($id)->update(['enabled' => false]);
-        session()->flash('ok', 'Regla desactivada');
+        $response = Http::delete(env('INTERNAL_API_URL') . "/api/alert-rules/{$id}");
+
+        if ($response->successful()) {
+            session()->flash('ok', 'Regla desactivada');
+        } else {
+            session()->flash('error', 'Error al desactivar');
+        }
     }
+
 
 
     public function render()
     {
-        $rules = \App\Models\AlertRule::latest()->get()->map(fn($r) => [
-            'id'            => $r->id,
-            'name'          => $r->name,
-            'device_id' => $r->device->name ?? '—',
-            'measurement'   => $r->measurement,
-            'min_threshold' => $r->min_threshold,
-            'max_threshold' => $r->max_threshold,
-            'enabled'       => $r->enabled,
-        ])->toArray();
+        $response = Http::get(env('INTERNAL_API_URL') . '/api/alert-rules');
+
+        $rules = $response->successful() ? $response->json('rules') : [];
 
         return view('livewire.rules-manager', compact('rules'))
             ->layout('layouts.app');

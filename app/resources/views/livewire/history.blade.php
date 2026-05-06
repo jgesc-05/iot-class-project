@@ -8,6 +8,18 @@
         </p>
     </div>
 
+    {{-- Mensajes flash --}}
+    @if(session('ok'))
+        <div style="background:#d1fae5; color:#065f46; padding:12px; border-radius:6px;">
+            {{ session('ok') }}
+        </div>
+    @endif
+    @if(session('error'))
+        <div style="background:#fee2e2; color:#991b1b; padding:12px; border-radius:6px;">
+            {{ session('error') }}
+        </div>
+    @endif
+
     {{-- Form de filtros --}}
     <div class="bg-white shadow rounded-lg p-6">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">

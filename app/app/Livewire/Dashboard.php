@@ -14,8 +14,7 @@ class Dashboard extends Component
             $baseUrl = rtrim($url, '/');
             $iframeUrl = "{$baseUrl}/d-solo/{$uid}?orgId=1&panelId=1";
 
-        return view('livewire.dashboard', [
-            'iframeUrl' => $iframeUrl
-        ])->layout('layouts.app');
+        return view('livewire.dashboard', compact('iframeUrl'))
+            ->layout('layouts.app');
     }
 }

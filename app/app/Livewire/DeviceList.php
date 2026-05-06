@@ -17,6 +17,7 @@ class DeviceList extends Component
                 ->orderByDesc('time')
                 ->first(),
             ]);
-        return view('livewire.device-list', compact('devices'))->layout('layouts.app');
+        return view('livewire.device-list', compact('devices'))
+            ->layout('layouts.app');
     }
 }
