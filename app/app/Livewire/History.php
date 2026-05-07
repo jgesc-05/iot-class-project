@@ -11,6 +11,11 @@ class History extends Component
 {
     use WithPagination;
 
+    public function paginationView()
+    {
+        return 'vendor.pagination.tailwind';
+    }
+
     /**
      * Filtros expuestos como query params en la URL para que la vista
      * sea bookmarkeable/compartible. Ejemplo:
