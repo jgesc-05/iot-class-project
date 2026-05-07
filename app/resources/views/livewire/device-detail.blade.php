@@ -131,28 +131,51 @@
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
                         <tr>
-                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipo</th>
-                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Payload</th>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Accion</th>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Detalle</th>
                             <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
                             <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Enviado</th>
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
                         @foreach ($this->recentCommands as $cmd)
+                            @php
+                                $payload = json_decode($cmd->payload, true) ?? [];
+
+                                $typeLabel = match($cmd->type) {
+                                    'on_off'           => ($payload['on'] ?? false) ? 'Encender' : 'Apagar',
+                                    'set_interval'     => 'Cambiar intervalo',
+                                    'calibrate_offset' => 'Calibrar offset',
+                                    default            => $cmd->type,
+                                };
+
+                                $detailLabel = match($cmd->type) {
+                                    'on_off'           => ($payload['on'] ?? false) ? 'Activar dispositivo' : 'Desactivar dispositivo',
+                                    'set_interval'     => 'Intervalo: ' . ($payload['seconds'] ?? '?') . 's',
+                                    'calibrate_offset' => 'Offset: ' . ($payload['offset'] ?? '?'),
+                                    default            => $cmd->payload,
+                                };
+
+                                $statusLabel = match($cmd->status) {
+                                    'pending'  => 'Pendiente',
+                                    'executed' => 'Ejecutado',
+                                    'failed'   => 'Fallido',
+                                    default    => $cmd->status,
+                                };
+
+                                $statusClasses = match($cmd->status) {
+                                    'pending'  => 'bg-yellow-100 text-yellow-800',
+                                    'executed' => 'bg-green-100 text-green-800',
+                                    'failed'   => 'bg-red-100 text-red-800',
+                                    default    => 'bg-gray-100 text-gray-800',
+                                };
+                            @endphp
                             <tr>
-                                <td class="px-4 py-2 text-sm text-gray-900 font-medium">{{ $cmd->type }}</td>
-                                <td class="px-4 py-2 text-sm text-gray-600 font-mono">{{ $cmd->payload }}</td>
+                                <td class="px-4 py-2 text-sm text-gray-900 font-medium">{{ $typeLabel }}</td>
+                                <td class="px-4 py-2 text-sm text-gray-600">{{ $detailLabel }}</td>
                                 <td class="px-4 py-2 text-sm">
-                                    @php
-                                        $statusClasses = match($cmd->status) {
-                                            'pending'  => 'bg-yellow-100 text-yellow-800',
-                                            'executed' => 'bg-green-100 text-green-800',
-                                            'failed'   => 'bg-red-100 text-red-800',
-                                            default    => 'bg-gray-100 text-gray-800',
-                                        };
-                                    @endphp
                                     <span class="inline-flex px-2 py-1 text-xs font-medium rounded-full {{ $statusClasses }}">
-                                        {{ $cmd->status }}
+                                        {{ $statusLabel }}
                                     </span>
                                 </td>
                                 <td class="px-4 py-2 text-sm text-gray-500">
