@@ -106,17 +106,6 @@
                     class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded text-sm font-medium transition">
                 Apagar
             </button>
-
-            <div class="flex items-center gap-2 ml-2">
-                <input type="number"
-                       wire:model="newInterval"
-                       placeholder="Segundos"
-                       class="border border-gray-300 rounded px-3 py-2 text-sm w-32">
-                <button wire:click="sendCommand('set_interval', {seconds: newInterval})"
-                        class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded text-sm font-medium transition">
-                    Aplicar intervalo
-                </button>
-            </div>
         </div>
     </div>
 

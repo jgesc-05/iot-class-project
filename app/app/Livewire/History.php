@@ -34,24 +34,26 @@ class History extends Component
 
     public function mount(): void
     {
-        // Si no hay rango definido, usar las ultimas 24 horas como default.
         if (!$this->fromDate) {
             $this->fromDate = now()->subDay()->format('Y-m-d\TH:i');
         }
         if (!$this->toDate) {
             $this->toDate = now()->format('Y-m-d\TH:i');
         }
+        if ($this->deviceId) {
+            $device = Device::where('device_id', $this->deviceId)->first();
+            $this->unit = $device?->unit ?? '';
+        }
     }
 
     /**
      * Lista de dispositivos para el dropdown del form.
-     * Solo incluye dispositivos activos.
+     * Incluye todos (activos e inactivos) para poder ver historial de cualquiera.
      */
     public function getDevicesProperty()
     {
-        return Device::where('status', 'active')
-            ->orderBy('name')
-            ->get(['id', 'device_id', 'name', 'measurement', 'unit']);
+        return Device::orderBy('name')
+            ->get(['id', 'device_id', 'name', 'measurement', 'unit', 'status']);
     }
 
     /**
@@ -105,8 +107,8 @@ class History extends Component
         }
 
         try {
-            $from = \Carbon\Carbon::parse($this->fromDate);
-            $to = \Carbon\Carbon::parse($this->toDate);
+            $from = \Carbon\Carbon::parse($this->fromDate, config('app.timezone'))->utc();
+            $to = \Carbon\Carbon::parse($this->toDate, config('app.timezone'))->utc();
         } catch (\Exception $e) {
             return null;
         }
@@ -120,6 +122,17 @@ class History extends Component
 
     public function render()
     {
+        // Si toDate esta cerca de "ahora" (menos de 5 min), lo extendemos
+        // automaticamente para que los datos nuevos aparezcan en el rango.
+        try {
+            $to = \Carbon\Carbon::parse($this->toDate, config('app.timezone'));
+            if ($to->diffInMinutes(now()) < 5) {
+                $this->toDate = now()->format('Y-m-d\TH:i');
+            }
+        } catch (\Exception $e) {
+            // ignorar
+        }
+
         return view('livewire.history')->layout('layouts.app');
     }
 }

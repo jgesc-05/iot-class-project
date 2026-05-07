@@ -13,8 +13,8 @@ class Dashboard extends Component
     {
         return view('livewire.dashboard', [
             'totalDevices'  => Device::count(),
-            'sensors'       => Device::where('type', 'sensor')->count(),
-            'actuators'     => Device::where('type', 'actuator')->count(),
+            'activeDevices' => Device::where('status', 'active')->count(),
+            'inactiveDevices' => Device::where('status', 'inactive')->count(),
             'pendingAlerts' => Alert::whereNull('resolved_at')->count(),
         ])->layout('layouts.app');
     }
