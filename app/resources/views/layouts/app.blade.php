@@ -20,8 +20,6 @@
         <script src="/js/metrics-chart.js"></script>
         <script src="/js/history-page.js"></script>
         <script src="/js/history-chart.js"></script>
-        <script src="/js/history-chart.js"></script>
-        <script src="/js/history-chart.js"></script>
     </head>
     <body class="font-sans antialiased">
         <div class="min-h-screen bg-stone-50">

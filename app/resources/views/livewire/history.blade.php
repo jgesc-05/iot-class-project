@@ -1,4 +1,4 @@
-<div class="p-6 space-y-6">
+<div wire:poll.5s class="p-6 space-y-6">
 
     {{-- Header --}}
     <div class="bg-white border border-stone-200 rounded-lg p-6">
@@ -190,22 +190,18 @@
                             <thead class="bg-gray-50">
                                 <tr>
                                     <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tiempo</th>
-                                    <th class="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Valor</th>
-                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Metadata</th>
+                                    <th class="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Valor</th>
                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200">
                                 @foreach ($this->metrics as $m)
                                     <tr>
                                         <td class="px-4 py-2 text-sm text-gray-900 font-mono">
-                                            {{ \Carbon\Carbon::parse($m->time)->format('Y-m-d H:i:s') }}
+                                            {{ \Carbon\Carbon::parse($m->time)->timezone(config('app.timezone'))->format('Y-m-d H:i:s') }}
                                         </td>
-                                        <td class="px-4 py-2 text-sm text-right font-medium">
+                                        <td class="px-4 py-2 text-sm text-center font-medium">
                                             {{ number_format((float) $m->value, 2) }}
                                             <span class="text-gray-400">{{ $unit }}</span>
-                                        </td>
-                                        <td class="px-4 py-2 text-xs text-gray-500 font-mono">
-                                            {{ $m->metadata ? \Illuminate\Support\Str::limit($m->metadata, 60) : '—' }}
                                         </td>
                                     </tr>
                                 @endforeach

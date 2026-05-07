@@ -10,7 +10,6 @@ use Livewire\Component;
 class DeviceDetail extends Component
 {
     public Device $device;
-    public ?int $newInterval = null;
 
     public function mount($deviceId): void
     {
@@ -48,9 +47,6 @@ class DeviceDetail extends Component
 
     public function sendCommand(string $type, array $payload = [])
     {
-        if ($type === 'set_interval') {
-            $payload = ['seconds' => (int) $this->newInterval];
-        }
         // Usamos hostname interno de Docker (web = nginx). url() devolveria
         // localhost:8000 que no es accesible desde el contenedor app (php-fpm).
         $baseUrl = env('INTERNAL_API_URL', 'http://web');
@@ -62,6 +58,12 @@ class DeviceDetail extends Component
 
 
         if ($response->successful()) {
+            if ($type === 'on_off') {
+                $this->device->update([
+                    'status' => ($payload['on'] ?? false) ? 'active' : 'inactive',
+                ]);
+                $this->device->refresh();
+            }
             session()->flash('ok', 'Comando enviado');
         } else {
             $error = $response->json('message') ?? 'Error desconocido';

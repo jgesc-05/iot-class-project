@@ -34,28 +34,28 @@
 
             <div class="bg-white border border-stone-200 rounded-lg p-5">
                 <div class="flex items-center justify-between mb-3">
-                    <span class="text-xs font-medium text-gray-500 uppercase tracking-wide">Sensores</span>
+                    <span class="text-xs font-medium text-gray-500 uppercase tracking-wide">Activos</span>
                     <span class="w-9 h-9 bg-sky-50 rounded-lg flex items-center justify-center">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 text-sky-600">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M9.348 14.652a3.75 3.75 0 010-5.304m5.304 0a3.75 3.75 0 010 5.304m-7.425 2.121a6.75 6.75 0 010-9.546m9.546 0a6.75 6.75 0 010 9.546M5.106 18.894c-3.808-3.807-3.808-9.98 0-13.788m13.788 0c3.808 3.807 3.808 9.98 0 13.788M12 12h.008v.008H12V12zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
                         </svg>
                     </span>
                 </div>
-                <div class="text-3xl font-bold text-gray-900">{{ $sensors }}</div>
-                <p class="text-xs text-gray-400 mt-1">Temperatura, humedad, luz, suelo</p>
+                <div class="text-3xl font-bold text-gray-900">{{ $activeDevices }}</div>
+                <p class="text-xs text-gray-400 mt-1">Dispositivos enviando datos</p>
             </div>
 
             <div class="bg-white border border-stone-200 rounded-lg p-5">
                 <div class="flex items-center justify-between mb-3">
-                    <span class="text-xs font-medium text-gray-500 uppercase tracking-wide">Actuadores</span>
+                    <span class="text-xs font-medium text-gray-500 uppercase tracking-wide">Inactivos</span>
                     <span class="w-9 h-9 bg-amber-50 rounded-lg flex items-center justify-center">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 text-amber-600">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M5.636 5.636a9 9 0 1012.728 0M12 3v9" />
                         </svg>
                     </span>
                 </div>
-                <div class="text-3xl font-bold text-gray-900">{{ $actuators }}</div>
-                <p class="text-xs text-gray-400 mt-1">Riego, ventilacion, iluminacion</p>
+                <div class="text-3xl font-bold text-gray-900">{{ $inactiveDevices }}</div>
+                <p class="text-xs text-gray-400 mt-1">Dispositivos detenidos</p>
             </div>
 
             <div class="bg-white border border-stone-200 rounded-lg p-5">
@@ -84,7 +84,7 @@
                     </svg>
                 </div>
                 <h4 class="font-medium text-gray-800 group-hover:text-green-700 transition">Dispositivos</h4>
-                <p class="text-xs text-gray-400 mt-1">Ver y gestionar sensores y actuadores</p>
+                <p class="text-xs text-gray-400 mt-1">Ver y gestionar todos los dispositivos</p>
             </a>
 
             <a href="{{ route('dashboards.index') }}"
