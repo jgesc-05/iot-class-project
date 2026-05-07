@@ -1,4 +1,5 @@
-<div class="p-6 space-y-6">
+<div class="p-6 space-y-6"
+     @if($simulating) wire:poll.{{ $device->sample_interval_s }}s="simulateTick" @endif>
     {{-- Vista que muestra la key una vez --}}
     @if(session('new_api_key'))
         <div class="bg-yellow-100 border border-yellow-400 p-4 rounded" x-init="setTimeout(() => show = false, 8000)">
@@ -106,6 +107,27 @@
                     class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded text-sm font-medium transition">
                 Apagar
             </button>
+
+            <div class="flex items-center gap-3 ml-2 pl-4 border-l border-stone-200">
+                @if (!$simulating)
+                    <button wire:click="startSimulation"
+                        class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded text-sm font-medium transition">
+                        Iniciar Simulacion
+                    </button>
+                @else
+                    <button wire:click="stopSimulation"
+                        class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded text-sm font-medium transition">
+                        Detener Simulacion
+                    </button>
+                    <span class="flex items-center gap-2 text-sm text-purple-600">
+                        <span class="relative flex h-3 w-3">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-3 w-3 bg-purple-500"></span>
+                        </span>
+                        Simulando cada {{ $device->sample_interval_s }}s
+                    </span>
+                @endif
+            </div>
         </div>
     </div>
 

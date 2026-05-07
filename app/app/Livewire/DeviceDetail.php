@@ -4,6 +4,8 @@ namespace App\Livewire;
 
 use App\Models\Command;
 use App\Models\Device;
+use App\Services\SimulatorService;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Livewire\Component;
@@ -19,10 +21,29 @@ class DeviceDetail extends Component
     }
 
     public Device $device;
+    public bool $simulating = false;
+
+    private function cacheKey(): string
+    {
+        return "simulating:{$this->device->device_id}";
+    }
 
     public function mount($deviceId): void
     {
         $this->device = Device::findOrFail($deviceId);
+        $this->simulating = Cache::get($this->cacheKey(), false);
+    }
+
+    public function startSimulation(): void
+    {
+        $this->simulating = true;
+        Cache::put($this->cacheKey(), true);
+    }
+
+    public function stopSimulation(): void
+    {
+        $this->simulating = false;
+        Cache::forget($this->cacheKey());
     }
 
     /**
@@ -35,6 +56,20 @@ class DeviceDetail extends Component
             ->where('device_id', $this->device->device_id)
             ->orderByDesc('time')
             ->first();
+    }
+
+    // Genera e inserta una metrica simulada directamente en la hypertable.
+    // Llamado por wire:poll cuando la simulacion esta activa.
+    public function simulateTick(): void
+    {
+        $value = SimulatorService::generate($this->device->measurement);
+
+        DB::table('metrics')->insert([
+            'time'      => now('UTC'),
+            'device_id' => $this->device->device_id,
+            'value'     => $value,
+            'metadata'  => json_encode(['source' => 'web_simulator']),
+        ]);
     }
 
     public function render()
