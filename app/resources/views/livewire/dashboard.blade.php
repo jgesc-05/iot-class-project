@@ -19,7 +19,7 @@
         {{-- Cards de metricas --}}
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
 
-            <div class="bg-white border border-stone-200 rounded-lg p-5">
+            <a href="{{ route('devices.index') }}" class="bg-white border border-stone-200 rounded-lg p-5 hover:border-green-300 hover:shadow-sm transition block">
                 <div class="flex items-center justify-between mb-3">
                     <span class="text-xs font-medium text-gray-500 uppercase tracking-wide">Dispositivos</span>
                     <span class="w-9 h-9 bg-green-50 rounded-lg flex items-center justify-center">
@@ -30,9 +30,9 @@
                 </div>
                 <div class="text-3xl font-bold text-gray-900">{{ $totalDevices }}</div>
                 <p class="text-xs text-gray-400 mt-1">Registrados en el sistema</p>
-            </div>
+            </a>
 
-            <div class="bg-white border border-stone-200 rounded-lg p-5">
+            <a href="{{ route('devices.index') }}?status=active" class="bg-white border border-stone-200 rounded-lg p-5 hover:border-sky-300 hover:shadow-sm transition block">
                 <div class="flex items-center justify-between mb-3">
                     <span class="text-xs font-medium text-gray-500 uppercase tracking-wide">Activos</span>
                     <span class="w-9 h-9 bg-sky-50 rounded-lg flex items-center justify-center">
@@ -43,9 +43,9 @@
                 </div>
                 <div class="text-3xl font-bold text-gray-900">{{ $activeDevices }}</div>
                 <p class="text-xs text-gray-400 mt-1">Dispositivos enviando datos</p>
-            </div>
+            </a>
 
-            <div class="bg-white border border-stone-200 rounded-lg p-5">
+            <a href="{{ route('devices.index') }}?status=inactive" class="bg-white border border-stone-200 rounded-lg p-5 hover:border-amber-300 hover:shadow-sm transition block">
                 <div class="flex items-center justify-between mb-3">
                     <span class="text-xs font-medium text-gray-500 uppercase tracking-wide">Inactivos</span>
                     <span class="w-9 h-9 bg-amber-50 rounded-lg flex items-center justify-center">
@@ -56,9 +56,9 @@
                 </div>
                 <div class="text-3xl font-bold text-gray-900">{{ $inactiveDevices }}</div>
                 <p class="text-xs text-gray-400 mt-1">Dispositivos detenidos</p>
-            </div>
+            </a>
 
-            <div class="bg-white border border-stone-200 rounded-lg p-5">
+            <a href="/alerts" class="bg-white border border-stone-200 rounded-lg p-5 hover:border-red-300 hover:shadow-sm transition block">
                 <div class="flex items-center justify-between mb-3">
                     <span class="text-xs font-medium text-gray-500 uppercase tracking-wide">Alertas activas</span>
                     <span class="w-9 h-9 {{ $pendingAlerts > 0 ? 'bg-red-50' : 'bg-stone-100' }} rounded-lg flex items-center justify-center">
@@ -69,7 +69,7 @@
                 </div>
                 <div class="text-3xl font-bold {{ $pendingAlerts > 0 ? 'text-red-600' : 'text-gray-900' }}">{{ $pendingAlerts }}</div>
                 <p class="text-xs text-gray-400 mt-1">{{ $pendingAlerts > 0 ? 'Requieren atencion' : 'Todo en orden' }}</p>
-            </div>
+            </a>
         </div>
 
         {{-- Accesos rapidos --}}

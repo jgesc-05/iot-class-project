@@ -7,7 +7,12 @@
 
     <div class="py-6 px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between items-center mb-6">
-            <p class="text-sm text-gray-500">{{ count($devices) }} dispositivos registrados</p>
+            <div class="flex items-center gap-3">
+                <p class="text-sm text-gray-500">{{ count($devices) }} dispositivos {{ $status ? "($status)" : 'registrados' }}</p>
+                @if($status)
+                    <a href="{{ route('devices.index') }}" class="text-xs text-green-600 hover:underline">Ver todos</a>
+                @endif
+            </div>
             <a href="{{ route('devices.create') }}"
                class="bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-green-700 transition">
                 + Crear dispositivo
