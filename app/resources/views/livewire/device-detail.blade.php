@@ -120,13 +120,13 @@
         </a>
     </div>
 
-    {{-- Tabla de ultimos 20 comandos --}}
+    {{-- Tabla de comandos --}}
     <div class="bg-white border border-stone-200 rounded-lg p-6">
         <h2 class="text-sm font-medium text-gray-500 uppercase tracking-wider mb-4">
-            Últimos comandos
+            Comandos
         </h2>
 
-        @if ($this->recentCommands->count())
+        @if ($commands->count())
             <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
@@ -138,9 +138,9 @@
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
-                        @foreach ($this->recentCommands as $cmd)
+                        @foreach ($commands as $cmd)
                             @php
-                                $payload = json_decode($cmd->payload, true) ?? [];
+                                $payload = $cmd->payload ?? [];
 
                                 $typeLabel = match($cmd->type) {
                                     'on_off'           => ($payload['on'] ?? false) ? 'Encender' : 'Apagar',
@@ -153,7 +153,7 @@
                                     'on_off'           => ($payload['on'] ?? false) ? 'Activar dispositivo' : 'Desactivar dispositivo',
                                     'set_interval'     => 'Intervalo: ' . ($payload['seconds'] ?? '?') . 's',
                                     'calibrate_offset' => 'Offset: ' . ($payload['offset'] ?? '?'),
-                                    default            => $cmd->payload,
+                                    default            => json_encode($cmd->payload),
                                 };
 
                                 $statusLabel = match($cmd->status) {
@@ -179,13 +179,19 @@
                                     </span>
                                 </td>
                                 <td class="px-4 py-2 text-sm text-gray-500">
-                                    {{ \Carbon\Carbon::parse($cmd->created_at, config('app.timezone'))->diffForHumans() }}
+                                    {{ $cmd->created_at->diffForHumans() }}
                                 </td>
                             </tr>
                         @endforeach
                     </tbody>
                 </table>
             </div>
+
+            @if ($commands->hasPages())
+                <div class="mt-4">
+                    {{ $commands->links() }}
+                </div>
+            @endif
         @else
             <p class="text-gray-500 italic">Aún no hay comandos enviados.</p>
         @endif
