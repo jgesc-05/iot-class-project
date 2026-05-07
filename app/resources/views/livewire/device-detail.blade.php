@@ -156,7 +156,7 @@
                                     </span>
                                 </td>
                                 <td class="px-4 py-2 text-sm text-gray-500">
-                                    {{ \Carbon\Carbon::parse($cmd->created_at)->diffForHumans() }}
+                                    {{ \Carbon\Carbon::parse($cmd->created_at, 'UTC')->diffForHumans() }}
                                 </td>
                             </tr>
                         @endforeach
