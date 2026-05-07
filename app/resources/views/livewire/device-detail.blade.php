@@ -56,7 +56,7 @@
                 <span class="text-2xl text-gray-500">{{ $device->unit }}</span>
             </div>
             <p class="mt-2 text-sm text-gray-500">
-                Última lectura: {{ \Carbon\Carbon::parse($this->latestMetric->time)->diffForHumans() }}
+                Última lectura: {{ \Carbon\Carbon::parse($this->latestMetric->time, 'UTC')->diffForHumans() }}
             </p>
         @else
             <p class="mt-2 text-gray-500 italic">Aún no hay métricas registradas.</p>

@@ -39,7 +39,7 @@
                     </div>
                     <div class="text-xs text-gray-400 mt-2">
                         {{ $row['last']?->time
-                            ? \Carbon\Carbon::parse($row['last']->time)->diffForHumans()
+                            ? \Carbon\Carbon::parse($row['last']->time, 'UTC')->diffForHumans()
                             : 'sin datos' }}
                     </div>
                 </a>
