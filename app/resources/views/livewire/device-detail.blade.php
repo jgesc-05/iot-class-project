@@ -1,5 +1,4 @@
-<div class="p-6 space-y-6"
-     @if($simulating) wire:poll.{{ $device->sample_interval_s }}s="simulateTick" @endif>
+<div class="p-6 space-y-6">
     {{-- Vista que muestra la key una vez --}}
     @if(session('new_api_key'))
         <div class="bg-yellow-100 border border-yellow-400 p-4 rounded" x-init="setTimeout(() => show = false, 8000)">
