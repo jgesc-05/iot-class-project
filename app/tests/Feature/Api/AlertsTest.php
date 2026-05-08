@@ -189,7 +189,7 @@ test('PATCH resolve marca la alerta como resuelta', function () {
     expect($alert->resolved_at)->not->toBeNull();
 });
 
-test('metrica dentro de rango auto-resuelve alerta pendiente', function () {
+test('metrica dentro de rango NO auto-resuelve alerta pendiente', function () {
     $rule = AlertRule::create([
         'device_id' => $this->device->id,
         'name' => 'Temp alta',
@@ -209,7 +209,7 @@ test('metrica dentro de rango auto-resuelve alerta pendiente', function () {
 
     expect($alert->resolved_at)->toBeNull();
 
-    // Enviar metrica DENTRO del rango (debe auto-resolver)
+    // Enviar metrica DENTRO del rango: la alerta debe seguir pendiente
     $response = $this->postJson('/api/metrics', [
         'device_id' => 'test-device-alert',
         'api_key' => $this->plainKey,
@@ -222,5 +222,6 @@ test('metrica dentro de rango auto-resuelve alerta pendiente', function () {
     $response->assertStatus(201);
 
     $alert->refresh();
-    expect($alert->resolved_at)->not->toBeNull();
+    // La alerta solo se resuelve manualmente por el operador
+    expect($alert->resolved_at)->toBeNull();
 });
