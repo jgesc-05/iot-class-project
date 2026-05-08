@@ -1,7 +1,7 @@
 {{-- Sidebar de navegación lateral - Día 9 (A.9.2) --}}
 {{-- Convive con la nav top de Breeze. Resalta el ítem activo. --}}
 
-<aside class="w-64 bg-white border-r border-stone-200 min-h-screen p-4">
+<aside class="w-64 bg-white border-r border-stone-200 sticky top-[49px] h-[calc(100vh-49px)] overflow-y-auto p-4">
     <nav class="space-y-1">
         @php
             $items = [
