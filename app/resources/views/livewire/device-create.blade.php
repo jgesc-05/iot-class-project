@@ -35,12 +35,14 @@
                 </div>
             @endif
 
+            {{-- Nombre --}}
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Nombre del dispositivo</label>
-                <input type="text" wire:model="name" placeholder="Ej: sensor-temp-a"
+                <input type="text" wire:model="name" placeholder="Ej: DHT22 Bloque A"
                        class="w-full border border-stone-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
             </div>
 
+            {{-- Tipo --}}
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Tipo</label>
                 <select wire:model="type"
@@ -53,37 +55,86 @@
                 </select>
             </div>
 
+            {{-- Medicion --}}
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Medicion</label>
-                <select wire:model="measurement"
+                <select wire:model.live="measurement"
                         class="w-full border border-stone-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
                     <option value="">-- Selecciona una medicion --</option>
-                    @foreach($measurements as $m)
-                        <option value="{{ $m }}">{{ $m }}</option>
+                    @foreach($measurementLabels as $value => $label)
+                        <option value="{{ $value }}">{{ $label }}</option>
                     @endforeach
+                    <option value="__custom__">Personalizado...</option>
                 </select>
-            </div>
 
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Unidad</label>
-                <select wire:model="unit"
-                        class="w-full border border-stone-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
-                    <option value="">-- Selecciona una unidad --</option>
-                    @foreach($units as $u)
-                        <option value="{{ $u }}">{{ $u }}</option>
-                    @endforeach
-                    <option value="__custom__">Otra (personalizar)</option>
-                </select>
-                @if($unit === '__custom__')
-                    <input type="text" wire:model="customUnit" placeholder="Escribe la unidad"
+                @if($measurement === '__custom__')
+                    <input type="text" wire:model="customMeasurement" placeholder="Escribe el nombre de la medicion"
                            class="mt-2 w-full border border-stone-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
                 @endif
             </div>
 
+            {{-- Unidad --}}
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Intervalo de muestreo (segundos)</label>
-                <input type="number" wire:model="sample_interval" placeholder="Ej: 30" min="1"
-                       class="w-full border border-stone-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Unidad</label>
+
+                @if($measurement === '__custom__')
+                    {{-- Medicion personalizada: campo libre para la unidad --}}
+                    <input type="text" wire:model="customUnit" placeholder="Escribe la unidad (ej: °C, %, ppm)"
+                           class="w-full border border-stone-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                @elseif($measurement !== '')
+                    {{-- Medicion predefinida: unidades filtradas + opcion personalizada --}}
+                    <select wire:model.live="unit"
+                            class="w-full border border-stone-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                        <option value="">-- Selecciona una unidad --</option>
+                        @foreach($measurementUnits[$measurement] ?? [] as $u)
+                            <option value="{{ $u }}">{{ $u }}</option>
+                        @endforeach
+                        <option value="__custom__">Otra (personalizar)</option>
+                    </select>
+
+                    @if($unit === '__custom__')
+                        <input type="text" wire:model="customUnit" placeholder="Escribe la unidad"
+                               class="mt-2 w-full border border-stone-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                    @endif
+                @else
+                    {{-- Sin medicion seleccionada --}}
+                    <select disabled
+                            class="w-full border border-stone-200 rounded-lg px-3 py-2 text-sm bg-gray-50 text-gray-400">
+                        <option>Selecciona primero una medicion</option>
+                    </select>
+                @endif
+            </div>
+
+            {{-- Rangos opcionales --}}
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">
+                    Rangos de simulacion
+                    <span class="text-gray-400 font-normal">(opcional)</span>
+                </label>
+                <p class="text-xs text-gray-500 mb-2">Si defines rangos, el simulador limitara los valores generados a este intervalo.</p>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs text-gray-500 mb-1">Minimo</label>
+                        <input type="number" wire:model="range_min" step="any" placeholder="Ej: 12"
+                               class="w-full border border-stone-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-gray-500 mb-1">Maximo</label>
+                        <input type="number" wire:model="range_max" step="any" placeholder="Ej: 30"
+                               class="w-full border border-stone-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                    </div>
+                </div>
+            </div>
+
+            {{-- Descripcion opcional --}}
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">
+                    Descripcion
+                    <span class="text-gray-400 font-normal">(opcional)</span>
+                </label>
+                <input type="text" wire:model="description" placeholder="Ej: Sensor en zona de corte, bloque A"
+                       class="w-full border border-stone-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                       maxlength="255">
             </div>
 
             <button wire:click="save"

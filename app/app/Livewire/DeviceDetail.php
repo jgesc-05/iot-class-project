@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Livewire\DeviceCreate;
 use App\Models\Command;
 use App\Models\Device;
 use App\Services\SimulatorService;
@@ -22,10 +23,111 @@ class DeviceDetail extends Component
     public Device $device;
     public bool $simulating = false;
 
+    // Campos editables
+    public bool $editing = false;
+    public string $editName = '';
+    public string $editUnit = '';
+    public string $editCustomUnit = '';
+    public $editRangeMin = null;
+    public $editRangeMax = null;
+    public string $editDescription = '';
+
     public function mount($deviceId): void
     {
         $this->device = Device::findOrFail($deviceId);
         $this->simulating = SimulatorService::isSimulating($this->device->device_id);
+    }
+
+    // Unidades disponibles segun la medicion del dispositivo
+    public function getAvailableUnitsProperty(): array
+    {
+        return DeviceCreate::MEASUREMENT_UNITS[$this->device->measurement] ?? [];
+    }
+
+    public function openEdit(): void
+    {
+        $this->editName = $this->device->name;
+        $units = $this->availableUnits;
+        if (in_array($this->device->unit, $units)) {
+            $this->editUnit = $this->device->unit;
+            $this->editCustomUnit = '';
+        } elseif (!empty($units)) {
+            // La unidad actual no esta en las opciones predefinidas
+            $this->editUnit = '__custom__';
+            $this->editCustomUnit = $this->device->unit;
+        } else {
+            // Medicion sin unidades predefinidas (personalizada)
+            $this->editUnit = '';
+            $this->editCustomUnit = $this->device->unit;
+        }
+        $metadata = $this->device->metadata ?? [];
+        $this->editRangeMin = $metadata['sim_min'] ?? null;
+        $this->editRangeMax = $metadata['sim_max'] ?? null;
+        $this->editDescription = $metadata['description'] ?? '';
+        $this->editing = true;
+    }
+
+    public function cancelEdit(): void
+    {
+        $this->editing = false;
+        $this->resetValidation();
+    }
+
+    public function saveEdit(): void
+    {
+        $finalUnit = $this->editUnit === '__custom__' || $this->editUnit === ''
+            ? $this->editCustomUnit
+            : $this->editUnit;
+
+        $this->validate([
+            'editName'        => 'required|string|max:100',
+            'editRangeMin'    => 'nullable|numeric',
+            'editRangeMax'    => 'nullable|numeric',
+            'editDescription' => 'nullable|string|max:255',
+        ]);
+
+        if (empty($finalUnit)) {
+            $this->addError('editUnit', 'La unidad es obligatoria.');
+            return;
+        }
+
+        if ($this->editRangeMin !== null && $this->editRangeMin !== '' &&
+            $this->editRangeMax !== null && $this->editRangeMax !== '' &&
+            (float) $this->editRangeMax <= (float) $this->editRangeMin) {
+            $this->addError('editRangeMax', 'El rango maximo debe ser mayor que el minimo.');
+            return;
+        }
+
+        $metadata = $this->device->metadata ?? [];
+
+        // Actualizar rangos en metadata
+        if ($this->editRangeMin !== null && $this->editRangeMin !== '') {
+            $metadata['sim_min'] = (float) $this->editRangeMin;
+        } else {
+            unset($metadata['sim_min']);
+        }
+
+        if ($this->editRangeMax !== null && $this->editRangeMax !== '') {
+            $metadata['sim_max'] = (float) $this->editRangeMax;
+        } else {
+            unset($metadata['sim_max']);
+        }
+
+        if (!empty($this->editDescription)) {
+            $metadata['description'] = $this->editDescription;
+        } else {
+            unset($metadata['description']);
+        }
+
+        $this->device->update([
+            'name'     => $this->editName,
+            'unit'     => $finalUnit,
+            'metadata' => !empty($metadata) ? $metadata : null,
+        ]);
+
+        $this->device->refresh();
+        $this->editing = false;
+        session()->flash('ok', 'Dispositivo actualizado');
     }
 
     public function startSimulation(): void

@@ -25,12 +25,23 @@
                 <h1 class="text-2xl font-bold text-gray-900">{{ $device->name }}</h1>
                 <p class="mt-1 text-sm text-gray-500">{{ $device->device_id }}</p>
             </div>
-            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium
-                {{ $device->status === 'active'
-                    ? 'bg-green-100 text-green-800'
-                    : 'bg-gray-100 text-gray-800' }}">
-                {{ $device->status === 'active' ? 'Activo' : 'Inactivo' }}
-            </span>
+            <div class="flex items-center gap-3">
+                @if (!$editing)
+                    <button wire:click="openEdit"
+                            class="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700 transition">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125" />
+                        </svg>
+                        Editar
+                    </button>
+                @endif
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium
+                    {{ $device->status === 'active'
+                        ? 'bg-green-100 text-green-800'
+                        : 'bg-gray-100 text-gray-800' }}">
+                    {{ $device->status === 'active' ? 'Activo' : 'Inactivo' }}
+                </span>
+            </div>
         </div>
 
         <dl class="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-4 text-sm">
@@ -39,19 +50,115 @@
                 <dd class="text-gray-900 font-medium">{{ $device->type }}</dd>
             </div>
             <div>
-                <dt class="text-gray-500">Medición</dt>
+                <dt class="text-gray-500">Medicion</dt>
                 <dd class="text-gray-900 font-medium">{{ $device->measurement }}</dd>
             </div>
             <div>
                 <dt class="text-gray-500">Unidad</dt>
                 <dd class="text-gray-900 font-medium">{{ $device->unit }}</dd>
             </div>
-            <div>
-                <dt class="text-gray-500">Intervalo</dt>
-                <dd class="text-gray-900 font-medium">{{ $device->sample_interval_s }}s</dd>
-            </div>
+            @php $meta = $device->metadata ?? []; @endphp
+            @if (isset($meta['sim_min']) || isset($meta['sim_max']))
+                <div>
+                    <dt class="text-gray-500">Rango simulacion</dt>
+                    <dd class="text-gray-900 font-medium">
+                        {{ $meta['sim_min'] ?? '—' }} ~ {{ $meta['sim_max'] ?? '—' }}
+                    </dd>
+                </div>
+            @endif
         </dl>
+
+        @if (!empty($meta['description']))
+            <p class="mt-3 text-sm text-gray-500">{{ $meta['description'] }}</p>
+        @endif
     </div>
+
+    {{-- Panel de edicion --}}
+    @if ($editing)
+        <div class="bg-white border border-stone-200 rounded-lg p-6 space-y-4">
+            <h2 class="text-sm font-medium text-gray-500 uppercase tracking-wider">Editar dispositivo</h2>
+
+            @if ($errors->any())
+                <div class="p-3 rounded-lg text-sm bg-red-50 text-red-800 border border-red-200">
+                    <ul class="list-disc list-inside space-y-1">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Nombre</label>
+                <input type="text" wire:model="editName"
+                       class="w-full border border-stone-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Unidad</label>
+                @if (count($this->availableUnits) > 0)
+                    {{-- Medicion con unidades predefinidas --}}
+                    <select wire:model.live="editUnit"
+                            class="w-full border border-stone-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                        <option value="">-- Selecciona una unidad --</option>
+                        @foreach ($this->availableUnits as $u)
+                            <option value="{{ $u }}">{{ $u }}</option>
+                        @endforeach
+                        <option value="__custom__">Otra (personalizar)</option>
+                    </select>
+                    @if ($editUnit === '__custom__')
+                        <input type="text" wire:model="editCustomUnit" placeholder="Escribe la unidad"
+                               class="mt-2 w-full border border-stone-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                    @endif
+                @else
+                    {{-- Medicion personalizada: campo libre --}}
+                    <input type="text" wire:model="editCustomUnit" placeholder="Escribe la unidad"
+                           class="w-full border border-stone-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                @endif
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">
+                    Rangos de simulacion
+                    <span class="text-gray-400 font-normal">(opcional)</span>
+                </label>
+                <p class="text-xs text-gray-500 mb-2">El simulador limitara los valores generados a este intervalo.</p>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs text-gray-500 mb-1">Minimo</label>
+                        <input type="number" wire:model="editRangeMin" step="any" placeholder="Sin limite"
+                               class="w-full border border-stone-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-gray-500 mb-1">Maximo</label>
+                        <input type="number" wire:model="editRangeMax" step="any" placeholder="Sin limite"
+                               class="w-full border border-stone-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">
+                    Descripcion
+                    <span class="text-gray-400 font-normal">(opcional)</span>
+                </label>
+                <input type="text" wire:model="editDescription" placeholder="Notas sobre el dispositivo"
+                       class="w-full border border-stone-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                       maxlength="255">
+            </div>
+
+            <div class="flex gap-3">
+                <button wire:click="saveEdit"
+                        class="bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-green-700 transition">
+                    Guardar cambios
+                </button>
+                <button wire:click="cancelEdit"
+                        class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-300 transition">
+                    Cancelar
+                </button>
+            </div>
+        </div>
+    @endif
 
     {{-- Valor actual --}}
     <div wire:poll.5s class="bg-white border border-stone-200 rounded-lg p-6">

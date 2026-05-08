@@ -30,7 +30,7 @@ class SimulateRun extends Command
                     continue;
                 }
 
-                SimulatorService::tick($device->device_id, $device->measurement);
+                SimulatorService::tick($device);
             }
 
             if (count($deviceIds) > 0) {
