@@ -74,14 +74,15 @@ class DeviceController extends Controller
             ], 404);
         }
 
-        // Parsear rango temporal (con defaults sanos).
+        // Parsear rango temporal (con defaults sanos). Se convierte a UTC
+        // porque la hypertable almacena timestamps en UTC.
         try {
             $from = $request->query('from')
-                ? Carbon::parse($request->query('from'))
-                : now()->subHours(2);
+                ? Carbon::parse($request->query('from'))->utc()
+                : now()->utc()->subHours(2);
             $to = $request->query('to')
-                ? Carbon::parse($request->query('to'))
-                : now();
+                ? Carbon::parse($request->query('to'))->utc()
+                : now()->utc();
         } catch (\Exception $e) {
             return response()->json([
                 'error' => 'invalid_timestamp',
@@ -135,14 +136,14 @@ class DeviceController extends Controller
             ], 404);
         }
 
-        // Parsear rango temporal (default 24h).
+        // Parsear rango temporal (default 24h). UTC para coincidir con la hypertable.
         try {
             $from = $request->query('from')
-                ? Carbon::parse($request->query('from'))
-                : now()->subDay();
+                ? Carbon::parse($request->query('from'))->utc()
+                : now()->utc()->subDay();
             $to = $request->query('to')
-                ? Carbon::parse($request->query('to'))
-                : now();
+                ? Carbon::parse($request->query('to'))->utc()
+                : now()->utc();
         } catch (\Exception $e) {
             return response()->json([
                 'error' => 'invalid_timestamp',
@@ -196,14 +197,14 @@ class DeviceController extends Controller
             ], 404);
         }
 
-        // Parsear rango temporal (default 24h).
+        // Parsear rango temporal (default 24h). UTC para coincidir con la hypertable.
         try {
             $from = $request->query('from')
-                ? Carbon::parse($request->query('from'))
-                : now()->subDay();
+                ? Carbon::parse($request->query('from'))->utc()
+                : now()->utc()->subDay();
             $to = $request->query('to')
-                ? Carbon::parse($request->query('to'))
-                : now();
+                ? Carbon::parse($request->query('to'))->utc()
+                : now()->utc();
         } catch (\Exception $e) {
             return response()->json([
                 'error' => 'invalid_timestamp',

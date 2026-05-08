@@ -49,6 +49,22 @@ services:
       timeout: 3s
       retries: 10
 
+  worker:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    container_name: iot_worker
+    restart: unless-stopped
+    working_dir: /var/www/html
+    command: php artisan simulate:run
+    volumes:
+      - ./app:/var/www/html
+    networks:
+      - iot_net
+    depends_on:
+      db:
+        condition: service_healthy
+
   grafana:
     image: grafana/grafana-oss:10.4.0
     container_name: iot_grafana

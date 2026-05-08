@@ -114,8 +114,15 @@ class AlertController extends Controller
         $limit = min((int) $request->query('limit', 50), 200);
 
         $query = Alert::with(['alertRule', 'device'])
-            ->orderByDesc('triggered_at')
             ->limit($limit);
+
+        // En 'all' mostramos primero las pendientes, luego las resueltas
+        if ($status === 'all') {
+            $query->orderByRaw('resolved_at IS NOT NULL')
+                  ->orderByDesc('triggered_at');
+        } else {
+            $query->orderByDesc('triggered_at');
+        }
 
         if ($status === 'pending') {
             $query->whereNull('resolved_at');

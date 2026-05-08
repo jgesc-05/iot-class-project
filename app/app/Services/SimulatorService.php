@@ -1,0 +1,91 @@
+<?php
+
+namespace App\Services;
+
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
+
+// Servicio de simulacion de datos IoT.
+// Replica la logica de generacion de valores de simulators/base.py y simulators/profiles.py
+// para poder generar metricas directamente desde la app web.
+// Gestiona el estado de simulacion en cache y la insercion de metricas.
+
+class SimulatorService
+{
+    // Perfiles de simulacion por tipo de medicion.
+    // Replica exacta de simulators/profiles.py
+    public const PROFILES = [
+        'temperatura_ambiente' => ['base' => 21.0, 'amplitude' => 4.0,   'noise' => 0.3],
+        'humedad_ambiente'     => ['base' => 67.0, 'amplitude' => 8.0,   'noise' => 1.5],
+        'humedad_sustrato'     => ['base' => 55.0, 'amplitude' => 5.0,   'noise' => 2.0],
+        'co2'                  => ['base' => 700,  'amplitude' => 200,   'noise' => 40],
+        'luminosidad'          => ['base' => 30000,'amplitude' => 25000, 'noise' => 1000],
+        'ph_sustrato'          => ['base' => 6.0,  'amplitude' => 0.2,   'noise' => 0.05],
+        'ec'                   => ['base' => 2.0,  'amplitude' => 0.3,   'noise' => 0.05],
+    ];
+
+    // Perfil generico para dispositivos cuyo measurement no tiene perfil especifico.
+    // Oscila entre ~15 y ~35 con ruido moderado.
+    public const DEFAULT_PROFILE = ['base' => 25.0, 'amplitude' => 10.0, 'noise' => 1.0];
+
+    private const CACHE_KEY = 'simulating_devices';
+
+    // -- Gestion de estado de simulacion --
+
+    // Marca un dispositivo como simulando.
+    public static function start(string $deviceId): void
+    {
+        $devices = Cache::get(self::CACHE_KEY, []);
+        $devices[$deviceId] = true;
+        Cache::put(self::CACHE_KEY, $devices);
+    }
+
+    // Detiene la simulacion de un dispositivo.
+    public static function stop(string $deviceId): void
+    {
+        $devices = Cache::get(self::CACHE_KEY, []);
+        unset($devices[$deviceId]);
+        Cache::put(self::CACHE_KEY, $devices);
+    }
+
+    // Verifica si un dispositivo esta simulando.
+    public static function isSimulating(string $deviceId): bool
+    {
+        $devices = Cache::get(self::CACHE_KEY, []);
+        return isset($devices[$deviceId]);
+    }
+
+    // Retorna los device_ids de todos los dispositivos simulando.
+    public static function getSimulatingDeviceIds(): array
+    {
+        return array_keys(Cache::get(self::CACHE_KEY, []));
+    }
+
+    // -- Generacion de valores --
+
+    // Genera un valor simulado usando la misma formula que Python:
+    // value = base + amplitude * sin(time / 60) + ruido_aleatorio
+    // Si no hay perfil especifico, usa el perfil generico.
+    public static function generate(string $measurement): float
+    {
+        $profile = self::PROFILES[$measurement] ?? self::DEFAULT_PROFILE;
+
+        $oscillation = $profile['amplitude'] * sin(time() / 60);
+        $noise = $profile['noise'] * (mt_rand() / mt_getrandmax() * 2 - 1);
+
+        return round($profile['base'] + $oscillation + $noise, 2);
+    }
+
+    // Genera e inserta una metrica simulada para un dispositivo.
+    public static function tick(string $deviceId, string $measurement): void
+    {
+        $value = self::generate($measurement);
+
+        DB::table('metrics')->insert([
+            'time'      => now('UTC'),
+            'device_id' => $deviceId,
+            'value'     => $value,
+            'metadata'  => json_encode(['source' => 'web_simulator']),
+        ]);
+    }
+}

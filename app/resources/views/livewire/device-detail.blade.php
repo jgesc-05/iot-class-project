@@ -56,7 +56,7 @@
                 <span class="text-2xl text-gray-500">{{ $device->unit }}</span>
             </div>
             <p class="mt-2 text-sm text-gray-500">
-                Última lectura: {{ \Carbon\Carbon::parse($this->latestMetric->time)->diffForHumans() }}
+                Última lectura: {{ \Carbon\Carbon::parse($this->latestMetric->time, 'UTC')->diffForHumans() }}
             </p>
         @else
             <p class="mt-2 text-gray-500 italic">Aún no hay métricas registradas.</p>
@@ -106,6 +106,27 @@
                     class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded text-sm font-medium transition">
                 Apagar
             </button>
+
+            <div class="flex items-center gap-3 ml-2 pl-4 border-l border-stone-200">
+                @if (!$simulating)
+                    <button wire:click="startSimulation"
+                        class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded text-sm font-medium transition">
+                        Iniciar Simulacion
+                    </button>
+                @else
+                    <button wire:click="stopSimulation"
+                        class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded text-sm font-medium transition">
+                        Detener Simulacion
+                    </button>
+                    <span class="flex items-center gap-2 text-sm text-purple-600">
+                        <span class="relative flex h-3 w-3">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-3 w-3 bg-purple-500"></span>
+                        </span>
+                        Simulando cada {{ $device->sample_interval_s }}s
+                    </span>
+                @endif
+            </div>
         </div>
     </div>
 
@@ -120,49 +141,78 @@
         </a>
     </div>
 
-    {{-- Tabla de ultimos 20 comandos --}}
+    {{-- Tabla de comandos --}}
     <div class="bg-white border border-stone-200 rounded-lg p-6">
         <h2 class="text-sm font-medium text-gray-500 uppercase tracking-wider mb-4">
-            Últimos comandos
+            Comandos
         </h2>
 
-        @if ($this->recentCommands->count())
+        @if ($commands->count())
             <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
                         <tr>
-                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipo</th>
-                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Payload</th>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Accion</th>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Detalle</th>
                             <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
                             <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Enviado</th>
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
-                        @foreach ($this->recentCommands as $cmd)
+                        @foreach ($commands as $cmd)
+                            @php
+                                $payload = $cmd->payload ?? [];
+
+                                $typeLabel = match($cmd->type) {
+                                    'on_off'           => ($payload['on'] ?? false) ? 'Encender' : 'Apagar',
+                                    'set_interval'     => 'Cambiar intervalo',
+                                    'calibrate_offset' => 'Calibrar offset',
+                                    default            => $cmd->type,
+                                };
+
+                                $detailLabel = match($cmd->type) {
+                                    'on_off'           => ($payload['on'] ?? false) ? 'Activar dispositivo' : 'Desactivar dispositivo',
+                                    'set_interval'     => 'Intervalo: ' . ($payload['seconds'] ?? '?') . 's',
+                                    'calibrate_offset' => 'Offset: ' . ($payload['offset'] ?? '?'),
+                                    default            => json_encode($cmd->payload),
+                                };
+
+                                $statusLabel = match($cmd->status) {
+                                    'pending'  => 'Pendiente',
+                                    'executed' => 'Ejecutado',
+                                    'failed'   => 'Fallido',
+                                    default    => $cmd->status,
+                                };
+
+                                $statusClasses = match($cmd->status) {
+                                    'pending'  => 'bg-yellow-100 text-yellow-800',
+                                    'executed' => 'bg-green-100 text-green-800',
+                                    'failed'   => 'bg-red-100 text-red-800',
+                                    default    => 'bg-gray-100 text-gray-800',
+                                };
+                            @endphp
                             <tr>
-                                <td class="px-4 py-2 text-sm text-gray-900 font-medium">{{ $cmd->type }}</td>
-                                <td class="px-4 py-2 text-sm text-gray-600 font-mono">{{ $cmd->payload }}</td>
+                                <td class="px-4 py-2 text-sm text-gray-900 font-medium">{{ $typeLabel }}</td>
+                                <td class="px-4 py-2 text-sm text-gray-600">{{ $detailLabel }}</td>
                                 <td class="px-4 py-2 text-sm">
-                                    @php
-                                        $statusClasses = match($cmd->status) {
-                                            'pending'  => 'bg-yellow-100 text-yellow-800',
-                                            'executed' => 'bg-green-100 text-green-800',
-                                            'failed'   => 'bg-red-100 text-red-800',
-                                            default    => 'bg-gray-100 text-gray-800',
-                                        };
-                                    @endphp
                                     <span class="inline-flex px-2 py-1 text-xs font-medium rounded-full {{ $statusClasses }}">
-                                        {{ $cmd->status }}
+                                        {{ $statusLabel }}
                                     </span>
                                 </td>
                                 <td class="px-4 py-2 text-sm text-gray-500">
-                                    {{ \Carbon\Carbon::parse($cmd->created_at)->diffForHumans() }}
+                                    {{ $cmd->created_at->diffForHumans() }}
                                 </td>
                             </tr>
                         @endforeach
                     </tbody>
                 </table>
             </div>
+
+            @if ($commands->hasPages())
+                <div class="mt-4">
+                    {{ $commands->links() }}
+                </div>
+            @endif
         @else
             <p class="text-gray-500 italic">Aún no hay comandos enviados.</p>
         @endif

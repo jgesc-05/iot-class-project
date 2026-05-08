@@ -2,18 +2,27 @@
 
 namespace App\Livewire;
 
+use App\Models\AlertRule;
 use App\Models\Device;
 use Livewire\Component;
+use Livewire\WithPagination;
 use Illuminate\Support\Facades\Http;
 
 class RulesManager extends Component
 {
+    use WithPagination;
+
     public $name = '';
     public $device_id = '';
     public $measurement = '';
     public $min_threshold = null;
     public $max_threshold = null;
     public $devices = [];
+
+    public function paginationView()
+    {
+        return 'vendor.pagination.tailwind';
+    }
 
     public function mount()
     {
@@ -81,13 +90,11 @@ class RulesManager extends Component
         }
     }
 
-
-
     public function render()
     {
-        $response = Http::get(env('INTERNAL_API_URL') . '/api/alert-rules');
-
-        $rules = $response->successful() ? $response->json('rules') : [];
+        $rules = AlertRule::with('device')
+            ->orderByDesc('created_at')
+            ->paginate(15);
 
         return view('livewire.rules-manager', compact('rules'))
             ->layout('layouts.app');

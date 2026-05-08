@@ -94,28 +94,28 @@
                 @forelse($rules as $rule)
                     <tr>
                         <td class="px-4 py-3 text-sm text-gray-800 font-medium">
-                            {{ $rule['name'] ?? 'Regla sin nombre' }}
+                            {{ $rule->name ?? 'Regla sin nombre' }}
                         </td>
-                        <td class="px-4 py-3 text-sm text-gray-600">{{ $rule['device_id'] }}</td>
-                        <td class="px-4 py-3 text-sm text-gray-600">{{ $rule['measurement'] }}</td>
+                        <td class="px-4 py-3 text-sm text-gray-600">{{ $rule->device->device_id ?? '—' }}</td>
+                        <td class="px-4 py-3 text-sm text-gray-600">{{ $rule->measurement }}</td>
                         <td class="px-4 py-3 text-sm text-gray-600">
-                            {{ $rule['min_threshold'] ?? '—' }} .. {{ $rule['max_threshold'] ?? '—' }}
+                            {{ $rule->min_threshold ?? '—' }} .. {{ $rule->max_threshold ?? '—' }}
                         </td>
                         <td class="px-4 py-3 text-sm">
-                            @if($rule['enabled'])
+                            @if($rule->enabled)
                                 <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-50 text-green-700">Activa</span>
                             @else
                                 <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-stone-100 text-gray-500">Inactiva</span>
                             @endif
                         </td>
                         <td class="px-4 py-3 text-right">
-                            @if($rule['enabled'])
-                                <button wire:click="disable({{ $rule['id'] }})"
+                            @if($rule->enabled)
+                                <button wire:click="disable({{ $rule->id }})"
                                         class="bg-red-500 hover:bg-red-600 text-white text-xs px-3 py-1.5 rounded-lg font-medium transition">
                                     Desactivar
                                 </button>
                             @else
-                                <button wire:click="enable({{ $rule['id'] }})"
+                                <button wire:click="enable({{ $rule->id }})"
                                         class="bg-green-600 hover:bg-green-700 text-white text-xs px-3 py-1.5 rounded-lg font-medium transition">
                                     Activar
                                 </button>
@@ -132,5 +132,12 @@
                 </tbody>
             </table>
         </div>
+
+        {{-- Paginacion --}}
+        @if ($rules->hasPages())
+            <div class="mt-4">
+                {{ $rules->links() }}
+            </div>
+        @endif
     </div>
 </div>

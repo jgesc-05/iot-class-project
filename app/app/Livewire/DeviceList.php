@@ -7,9 +7,22 @@ use Livewire\Component;
 
 class DeviceList extends Component
 {
+    public string $status = '';
+
+    public function mount()
+    {
+        $this->status = request()->query('status', '');
+    }
+
     public function render()
     {
-        $devices = Device::all()
+        $query = Device::query();
+
+        if ($this->status !== '') {
+            $query->where('status', $this->status);
+        }
+
+        $devices = $query->get()
             ->map(fn($d) => [
                 'device' => $d,
                 'last' => \DB::table('metrics')
@@ -17,6 +30,7 @@ class DeviceList extends Component
                 ->orderByDesc('time')
                 ->first(),
             ]);
+
         return view('livewire.device-list', compact('devices'))
             ->layout('layouts.app');
     }

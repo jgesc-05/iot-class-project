@@ -2,18 +2,42 @@
 
 namespace App\Livewire;
 
+use App\Models\Command;
 use App\Models\Device;
+use App\Services\SimulatorService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Livewire\Component;
+use Livewire\WithPagination;
 
 class DeviceDetail extends Component
 {
+    use WithPagination;
+
+    public function paginationView()
+    {
+        return 'vendor.pagination.tailwind';
+    }
+
     public Device $device;
+    public bool $simulating = false;
 
     public function mount($deviceId): void
     {
         $this->device = Device::findOrFail($deviceId);
+        $this->simulating = SimulatorService::isSimulating($this->device->device_id);
+    }
+
+    public function startSimulation(): void
+    {
+        $this->simulating = true;
+        SimulatorService::start($this->device->device_id);
+    }
+
+    public function stopSimulation(): void
+    {
+        $this->simulating = false;
+        SimulatorService::stop($this->device->device_id);
     }
 
     /**
@@ -28,21 +52,15 @@ class DeviceDetail extends Component
             ->first();
     }
 
-    /**
-     * Trae los ultimos 20 comandos enviados a este dispositivo.
-     */
-    public function getRecentCommandsProperty()
-    {
-        return DB::table('commands')
-            ->where('device_id', $this->device->id)
-            ->orderByDesc('created_at')
-            ->limit(20)
-            ->get();
-    }
-
     public function render()
     {
-        return view('livewire.device-detail')->layout('layouts.app');
+        $commands = Command::where('device_id', $this->device->id)
+            ->orderByDesc('created_at')
+            ->paginate(10)
+            ->withPath(route('devices.show', $this->device->id));
+
+        return view('livewire.device-detail', compact('commands'))
+            ->layout('layouts.app');
     }
 
     public function sendCommand(string $type, array $payload = [])
