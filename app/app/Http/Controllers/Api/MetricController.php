@@ -56,8 +56,7 @@ class MetricController extends Controller
             'metadata'  => isset($data['metadata']) ? json_encode($data['metadata']) : null,
         ]);
 
-        // Evaluar reglas activas: dispara alertas si valor fuera de rango,
-        // las auto-resuelve si valor vuelve dentro de rango.
+        // Evaluar reglas activas: dispara alertas si valor fuera de rango.
         // Graceful degradation: si falla, la metrica se guarda igual.
         try {
             $this->evaluateRules($device, $data['measurement'], (float) $data['value'], $time);
@@ -81,14 +80,8 @@ class MetricController extends Controller
      * Evalua reglas activas para el dispositivo y measurement dados.
      *
      * - Si valor esta fuera de rango Y no hay alerta pendiente: crea alerta nueva.
-     * - Si valor esta dentro de rango Y hay alerta pendiente: la resuelve.
-     * - En cualquier otro caso, no hace nada.
-     *
-     * Esto modela el ciclo de vida natural de una alerta: se dispara cuando
-     * aparece la condicion, se resuelve cuando desaparece. El operador puede
-     * intervenir manualmente con PATCH /api/alerts/{id}/resolve si quiere
-     * resolver antes (o cerrar una alerta sin que el dispositivo haya
-     * vuelto al rango).
+     * - Las alertas solo se resuelven manualmente por el operador
+     *   via PATCH /api/alerts/{id}/resolve.
      */
     private function evaluateRules(Device $device, string $measurement, float $value, Carbon $time): void
     {
@@ -102,21 +95,15 @@ class MetricController extends Controller
                 ->whereNull('resolved_at')
                 ->first();
 
-            if ($rule->isOutOfRange($value)) {
-                // Fuera de rango: crear alerta nueva solo si no hay una pendiente
-                if (!$openAlert) {
-                    Alert::create([
-                        'alert_rule_id' => $rule->id,
-                        'device_id' => $device->id,
-                        'value' => $value,
-                        'triggered_at' => $time,
-                    ]);
-                }
-            } else {
-                // Dentro de rango: auto-resolver alerta pendiente si la habia
-                if ($openAlert) {
-                    $openAlert->resolve($time);
-                }
+            if ($rule->isOutOfRange($value) && !$openAlert) {
+                // Fuera de rango y sin alerta pendiente: crear alerta nueva.
+                // Las alertas solo se resuelven manualmente por el operador.
+                Alert::create([
+                    'alert_rule_id' => $rule->id,
+                    'device_id' => $device->id,
+                    'value' => $value,
+                    'triggered_at' => $time,
+                ]);
             }
         }
     }

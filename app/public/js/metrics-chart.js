@@ -76,23 +76,26 @@ window.metricsChart = function(deviceId, unit) {
 
         async fetchData() {
             try {
-                const res = await fetch('/api/devices/' + deviceId + '/metrics?limit=1500');
+                // Usar endpoint /history con bucket de 1 minuto para tener
+                // datos agregados y evitar que el limit corte datos recientes.
+                const from = new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString();
+                const res = await fetch('/api/devices/' + deviceId + '/history?bucket=5m&from=' + from);
                 if (!res.ok) {
                     console.error('Error fetching metrics:', res.status);
                     return;
                 }
                 const data = await res.json();
-                this.updateChart(data.metrics);
+                this.updateChart(data.history);
                 this.lastUpdate = 'Actualizado ' + new Date().toLocaleTimeString();
             } catch (e) {
                 console.error('Network error fetching metrics:', e);
             }
         },
 
-        updateChart(metrics) {
+        updateChart(history) {
             if (!chartInstance) return;
 
-            if (!metrics || metrics.length === 0) {
+            if (!history || history.length === 0) {
                 this.hasData = false;
                 chartInstance.data.labels = [];
                 chartInstance.data.datasets[0].data = [];
@@ -101,12 +104,12 @@ window.metricsChart = function(deviceId, unit) {
             }
 
             this.hasData = true;
-            chartInstance.data.labels = metrics.map(function(m) {
-                const d = new Date(m.time);
+            chartInstance.data.labels = history.map(function(h) {
+                const d = new Date(h.time);
                 return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
             });
-            chartInstance.data.datasets[0].data = metrics.map(function(m) {
-                return m.value;
+            chartInstance.data.datasets[0].data = history.map(function(h) {
+                return h.avg;
             });
             chartInstance.update('none');
         }

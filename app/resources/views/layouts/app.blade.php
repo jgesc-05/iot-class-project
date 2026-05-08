@@ -29,7 +29,7 @@
             <div class="flex">
                 <x-sidebar />
 
-                <div class="flex-1 min-w-0">
+                <div class="flex-1 min-w-0 flex flex-col min-h-[calc(100vh-49px)]">
                     <!-- Page Heading -->
                     @if (isset($header))
                         <header class="bg-white shadow">
@@ -40,9 +40,16 @@
                     @endif
 
                     <!-- Page Content -->
-                    <main>
+                    <main class="flex-1">
                         {{ $slot }}
                     </main>
+
+                    <footer class="border-t border-stone-200 py-5 px-6">
+                        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-gray-400">
+                            <span>Greenhouse Monitor &middot; Proyecto IoT</span>
+                            <span>UNAB &mdash; {{ date('Y') }}</span>
+                        </div>
+                    </footer>
                 </div>
             </div>
         </div>
