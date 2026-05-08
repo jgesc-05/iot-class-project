@@ -83,7 +83,7 @@
                            class="w-full border border-stone-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
                 @elseif($measurement !== '')
                     {{-- Medicion predefinida: unidades filtradas + opcion personalizada --}}
-                    <select wire:model="unit"
+                    <select wire:model.live="unit"
                             class="w-full border border-stone-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
                         <option value="">-- Selecciona una unidad --</option>
                         @foreach($measurementUnits[$measurement] ?? [] as $u)
