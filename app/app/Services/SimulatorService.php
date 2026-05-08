@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Device;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
@@ -63,27 +64,58 @@ class SimulatorService
 
     // -- Generacion de valores --
 
-    // Genera un valor simulado usando la misma formula que Python:
-    // value = base + amplitude * sin(time / 60) + ruido_aleatorio
-    // Si no hay perfil especifico, usa el perfil generico.
-    public static function generate(string $measurement): float
+    // Genera un valor simulado.
+    // Si hay rangos (min/max), genera valores oscilando dentro de ese rango.
+    // Si no, usa el perfil predefinido o el generico.
+    public static function generate(string $measurement, ?float $min = null, ?float $max = null): float
     {
-        $profile = self::PROFILES[$measurement] ?? self::DEFAULT_PROFILE;
+        if ($min !== null && $max !== null) {
+            // Rangos personalizados: oscila dentro del rango completo
+            $center = ($min + $max) / 2;
+            $halfRange = ($max - $min) / 2;
+            $oscillation = $halfRange * 0.6 * sin(time() / 60);
+            $noise = $halfRange * 0.15 * (mt_rand() / mt_getrandmax() * 2 - 1);
+            $value = $center + $oscillation + $noise;
+            return round(max($min, min($max, $value)), 2);
+        }
 
+        if ($min !== null) {
+            // Solo minimo: usa perfil pero clampea por abajo
+            $profile = self::PROFILES[$measurement] ?? self::DEFAULT_PROFILE;
+            $value = $profile['base'] + $profile['amplitude'] * sin(time() / 60)
+                   + $profile['noise'] * (mt_rand() / mt_getrandmax() * 2 - 1);
+            return round(max($min, $value), 2);
+        }
+
+        if ($max !== null) {
+            // Solo maximo: usa perfil pero clampea por arriba
+            $profile = self::PROFILES[$measurement] ?? self::DEFAULT_PROFILE;
+            $value = $profile['base'] + $profile['amplitude'] * sin(time() / 60)
+                   + $profile['noise'] * (mt_rand() / mt_getrandmax() * 2 - 1);
+            return round(min($max, $value), 2);
+        }
+
+        // Sin rangos: perfil predefinido o generico
+        $profile = self::PROFILES[$measurement] ?? self::DEFAULT_PROFILE;
         $oscillation = $profile['amplitude'] * sin(time() / 60);
         $noise = $profile['noise'] * (mt_rand() / mt_getrandmax() * 2 - 1);
-
         return round($profile['base'] + $oscillation + $noise, 2);
     }
 
     // Genera e inserta una metrica simulada para un dispositivo.
-    public static function tick(string $deviceId, string $measurement): void
+    // Si el dispositivo tiene sim_min/sim_max en metadata (definidos al crearlo),
+    // el valor generado se limita a ese rango.
+    public static function tick(Device $device): void
     {
-        $value = self::generate($measurement);
+        $metadata = $device->metadata ?? [];
+        $min = $metadata['sim_min'] ?? null;
+        $max = $metadata['sim_max'] ?? null;
+
+        $value = self::generate($device->measurement, $min, $max);
 
         DB::table('metrics')->insert([
             'time'      => now('UTC'),
-            'device_id' => $deviceId,
+            'device_id' => $device->device_id,
             'value'     => $value,
             'metadata'  => json_encode(['source' => 'web_simulator']),
         ]);
