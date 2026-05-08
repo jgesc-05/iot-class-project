@@ -7,15 +7,15 @@
                     Anterior
                 </span>
             @else
-                <a href="{{ $paginator->previousPageUrl() }}" class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-stone-200 rounded-lg hover:bg-stone-50 transition">
+                <button wire:click="previousPage" class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-stone-200 rounded-lg hover:bg-stone-50 transition">
                     Anterior
-                </a>
+                </button>
             @endif
 
             @if ($paginator->hasMorePages())
-                <a href="{{ $paginator->nextPageUrl() }}" class="inline-flex items-center px-4 py-2 ml-3 text-sm font-medium text-gray-700 bg-white border border-stone-200 rounded-lg hover:bg-stone-50 transition">
+                <button wire:click="nextPage" class="inline-flex items-center px-4 py-2 ml-3 text-sm font-medium text-gray-700 bg-white border border-stone-200 rounded-lg hover:bg-stone-50 transition">
                     Siguiente
-                </a>
+                </button>
             @else
                 <span class="inline-flex items-center px-4 py-2 ml-3 text-sm font-medium text-gray-400 bg-white border border-stone-200 rounded-lg cursor-default">
                     Siguiente
@@ -44,11 +44,11 @@
                         </svg>
                     </span>
                 @else
-                    <a href="{{ $paginator->previousPageUrl() }}" class="inline-flex items-center justify-center w-9 h-9 text-gray-500 bg-white border border-stone-200 rounded-lg hover:bg-stone-50 hover:text-green-700 transition" aria-label="Anterior">
+                    <button wire:click="previousPage" class="inline-flex items-center justify-center w-9 h-9 text-gray-500 bg-white border border-stone-200 rounded-lg hover:bg-stone-50 hover:text-green-700 transition" aria-label="Anterior">
                         <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
                         </svg>
-                    </a>
+                    </button>
                 @endif
 
                 {{-- Numeros de pagina --}}
@@ -62,9 +62,9 @@
                             @if ($page == $paginator->currentPage())
                                 <span class="inline-flex items-center justify-center w-9 h-9 text-sm font-semibold text-white bg-green-600 rounded-lg">{{ $page }}</span>
                             @else
-                                <a href="{{ $url }}" class="inline-flex items-center justify-center w-9 h-9 text-sm font-medium text-gray-600 bg-white border border-stone-200 rounded-lg hover:bg-green-50 hover:text-green-700 hover:border-green-300 transition" aria-label="Ir a pagina {{ $page }}">
+                                <button wire:click="gotoPage({{ $page }})" class="inline-flex items-center justify-center w-9 h-9 text-sm font-medium text-gray-600 bg-white border border-stone-200 rounded-lg hover:bg-green-50 hover:text-green-700 hover:border-green-300 transition" aria-label="Ir a pagina {{ $page }}">
                                     {{ $page }}
-                                </a>
+                                </button>
                             @endif
                         @endforeach
                     @endif
@@ -72,11 +72,11 @@
 
                 {{-- Siguiente --}}
                 @if ($paginator->hasMorePages())
-                    <a href="{{ $paginator->nextPageUrl() }}" class="inline-flex items-center justify-center w-9 h-9 text-gray-500 bg-white border border-stone-200 rounded-lg hover:bg-stone-50 hover:text-green-700 transition" aria-label="Siguiente">
+                    <button wire:click="nextPage" class="inline-flex items-center justify-center w-9 h-9 text-gray-500 bg-white border border-stone-200 rounded-lg hover:bg-stone-50 hover:text-green-700 transition" aria-label="Siguiente">
                         <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
                         </svg>
-                    </a>
+                    </button>
                 @else
                     <span class="inline-flex items-center justify-center w-9 h-9 text-gray-300 bg-white border border-stone-200 rounded-lg cursor-default">
                         <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">

@@ -76,7 +76,7 @@ window.metricsChart = function(deviceId, unit) {
 
         async fetchData() {
             try {
-                const res = await fetch('/api/devices/' + deviceId + '/metrics');
+                const res = await fetch('/api/devices/' + deviceId + '/metrics?limit=1500');
                 if (!res.ok) {
                     console.error('Error fetching metrics:', res.status);
                     return;

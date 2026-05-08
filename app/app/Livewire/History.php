@@ -122,7 +122,8 @@ class History extends Component
             ->where('device_id', $this->deviceId)
             ->whereBetween('time', [$from, $to])
             ->orderByDesc('time')
-            ->paginate(50);
+            ->paginate(50)
+            ->withQueryString();
     }
 
     public function render()
