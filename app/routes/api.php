@@ -25,6 +25,7 @@ Route::post('/commands', [CommandController::class, 'store']);
 Route::post('/alert-rules', [AlertController::class, 'storeRule'])->name('alert-rules.store');
 Route::get('/alert-rules', [AlertController::class, 'listRules'])->name('alert-rules.list');
 Route::delete('/alert-rules/{id}', [AlertController::class, 'disableRule'])->name('alert-rules.disable');
+Route::delete('/alert-rules/{id}/destroy', [AlertController::class, 'destroyRule'])->name('alert-rules.destroy');
 Route::patch('/alert-rules/{id}/enable', [AlertController::class, 'enableRule'])->name('alert-rules.enable');
 Route::get('/alerts', [AlertController::class, 'listAlerts'])->name('alerts.list');
 Route::patch('/alerts/{id}/resolve', [AlertController::class, 'resolveAlert'])->name('alerts.resolve');

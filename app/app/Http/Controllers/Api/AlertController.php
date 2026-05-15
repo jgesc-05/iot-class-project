@@ -85,6 +85,25 @@ class AlertController extends Controller
     }
 
     /**
+     * DELETE /api/alert-rules/{id}/destroy
+     *
+     * Elimina permanentemente una regla y sus alertas asociadas (cascade).
+     */
+    public function destroyRule(int $id): Response
+    {
+        $rule = AlertRule::find($id);
+
+        if (!$rule) {
+            $this->jsonError(404, 'rule_not_found',
+                "La regla con id {$id} no existe.");
+        }
+
+        $rule->delete();
+
+        return response()->noContent();
+    }
+
+    /**
      * PATCH /api/alert-rules/{id}/enable
      *
      * Reactiva una regla deshabilitada. Idempotente.

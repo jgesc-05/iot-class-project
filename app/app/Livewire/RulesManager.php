@@ -79,6 +79,17 @@ class RulesManager extends Component
         }
     }
 
+    public function destroy($id)
+    {
+        $response = Http::delete(env('INTERNAL_API_URL') . "/api/alert-rules/{$id}/destroy");
+
+        if ($response->successful()) {
+            session()->flash('ok', 'Regla eliminada permanentemente');
+        } else {
+            session()->flash('error', 'Error al eliminar la regla');
+        }
+    }
+
     public function enable($id)
     {
         $response = Http::patch(env('INTERNAL_API_URL') . "/api/alert-rules/{$id}/enable");
