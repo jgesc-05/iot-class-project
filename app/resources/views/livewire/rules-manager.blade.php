@@ -108,7 +108,7 @@
                                 <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-stone-100 text-gray-500">Inactiva</span>
                             @endif
                         </td>
-                        <td class="px-4 py-3 text-right">
+                        <td class="px-4 py-3 text-right space-x-2">
                             @if($rule->enabled)
                                 <button wire:click="disable({{ $rule->id }})"
                                         class="bg-red-500 hover:bg-red-600 text-white text-xs px-3 py-1.5 rounded-lg font-medium transition">
@@ -120,6 +120,11 @@
                                     Activar
                                 </button>
                             @endif
+                            <button wire:click="destroy({{ $rule->id }})"
+                                    wire:confirm="Esto eliminara la regla y todas sus alertas asociadas. Continuar?"
+                                    class="bg-stone-500 hover:bg-stone-600 text-white text-xs px-3 py-1.5 rounded-lg font-medium transition">
+                                Eliminar
+                            </button>
                         </td>
                     </tr>
                 @empty

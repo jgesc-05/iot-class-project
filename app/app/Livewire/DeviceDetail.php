@@ -154,6 +154,20 @@ class DeviceDetail extends Component
             ->first();
     }
 
+    public function destroy(): void
+    {
+        // Detener simulacion si esta activa antes de eliminar
+        if (SimulatorService::isSimulating($this->device->device_id)) {
+            SimulatorService::stop($this->device->device_id);
+        }
+
+        $this->device->delete();
+
+        session()->flash('ok', 'Dispositivo eliminado');
+
+        $this->redirectRoute('devices.index');
+    }
+
     public function render()
     {
         $commands = Command::where('device_id', $this->device->id)

@@ -6,6 +6,12 @@
     </x-slot>
 
     <div class="py-6 px-4 sm:px-6 lg:px-8">
+        @if(session('ok'))
+            <div class="mb-4 p-4 rounded-lg text-sm bg-green-50 text-green-800 border border-green-200">
+                {{ session('ok') }}
+            </div>
+        @endif
+
         <div class="flex justify-between items-center mb-6">
             <div class="flex items-center gap-3">
                 <p class="text-sm text-gray-500">{{ count($devices) }} dispositivos {{ $status ? "($status)" : 'registrados' }}</p>
