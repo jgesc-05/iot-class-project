@@ -16,15 +16,15 @@ class Dashboards extends Component
         return [
             'overview' => [
                 'label' => 'Vista General',
-                'uid'   => 'efk4rh480i680e',
+                'uid'   => 'overview',
             ],
-            'interior-exterior' => [
-                'label' => 'Interior vs Exterior',
-                'uid'   => 'efl5rsjrv2800c',
+            'calidad-rosa' => [
+                'label' => 'Calidad de la Rosa',
+                'uid'   => 'calidad-rosa',
             ],
             'alertas' => [
-                'label' => 'Alertas por dia',
-                'uid'   => 'bfl5rwgctc4qod',
+                'label' => 'Alertas y Anomalias',
+                'uid'   => 'alertas',
             ],
         ];
     }

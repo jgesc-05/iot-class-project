@@ -1,150 +1,234 @@
 {
-  "annotations": {
-    "list": [
-      {
-        "builtIn": 1,
-        "datasource": {
-          "type": "grafana",
-          "uid": "-- Grafana --"
-        },
-        "enable": true,
-        "hide": true,
-        "iconColor": "rgba(0, 211, 255, 1)",
-        "name": "Annotations & Alerts",
-        "type": "dashboard"
-      }
-    ]
-  },
-  "description": "Alertas diarias",
+  "annotations": { "list": [] },
   "editable": true,
   "fiscalYearStartMonth": 0,
-  "graphTooltip": 0,
-  "id": 3,
+  "graphTooltip": 1,
+  "id": null,
   "links": [],
   "panels": [
     {
-      "datasource": {
-        "type": "grafana-postgresql-datasource",
-        "uid": "timescaledb"
-      },
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 0 },
+      "id": 300,
+      "title": "Resumen de Alertas",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "grafana-postgresql-datasource", "uid": "timescaledb" },
       "fieldConfig": {
         "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "fillOpacity": 80,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineWidth": 1,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
+          "color": { "mode": "thresholds" },
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 3 },
+              { "color": "red", "value": 10 }
             ]
           }
-        },
-        "overrides": []
+        }
       },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 0
-      },
-      "id": 1,
-      "options": {
-        "barRadius": 0,
-        "barWidth": 0.97,
-        "fullHighlight": false,
-        "groupWidth": 0.7,
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "orientation": "auto",
-        "showValue": "auto",
-        "stacking": "none",
-        "tooltip": {
-          "mode": "single",
-          "sort": "none"
-        },
-        "xTickLabelRotation": 0,
-        "xTickLabelSpacing": 0
-      },
+      "gridPos": { "h": 5, "w": 6, "x": 0, "y": 1 },
+      "id": 31,
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] }, "colorMode": "background", "graphMode": "none", "textMode": "value" },
+      "title": "Alertas Pendientes",
+      "type": "stat",
       "targets": [
         {
-          "datasource": {
-            "type": "grafana-postgresql-datasource",
-            "uid": "timescaledb"
-          },
-          "editorMode": "code",
+          "datasource": { "type": "grafana-postgresql-datasource", "uid": "timescaledb" },
+          "rawSql": "SELECT count(*) AS value, now() AS time FROM alerts WHERE status = 'pending'",
           "format": "table",
-          "rawQuery": true,
-          "rawSql": "SELECT time_bucket('1 day', triggered_at) AS t, count(*) AS alertas\r\nFROM alerts\r\nGROUP BY 1 ORDER BY 1;",
-          "refId": "A",
-          "sql": {
-            "columns": [
-              {
-                "parameters": [],
-                "type": "function"
-              }
-            ],
-            "groupBy": [
-              {
-                "property": {
-                  "type": "string"
-                },
-                "type": "groupBy"
-              }
-            ],
-            "limit": 50
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "datasource": { "type": "grafana-postgresql-datasource", "uid": "timescaledb" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null }
+            ]
           }
         }
-      ],
-      "title": "Alertas por día",
-      "type": "barchart"
+      },
+      "gridPos": { "h": 5, "w": 6, "x": 6, "y": 1 },
+      "id": 32,
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] }, "colorMode": "background", "graphMode": "none", "textMode": "value" },
+      "title": "Alertas Resueltas (7d)",
+      "type": "stat",
+      "targets": [
+        {
+          "datasource": { "type": "grafana-postgresql-datasource", "uid": "timescaledb" },
+          "rawSql": "SELECT count(*) AS value, now() AS time FROM alerts WHERE status = 'resolved' AND created_at > now() - interval '7 days'",
+          "format": "table",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "datasource": { "type": "grafana-postgresql-datasource", "uid": "timescaledb" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 5 },
+              { "color": "red", "value": 15 }
+            ]
+          }
+        }
+      },
+      "gridPos": { "h": 5, "w": 6, "x": 12, "y": 1 },
+      "id": 33,
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] }, "colorMode": "background", "graphMode": "none", "textMode": "value" },
+      "title": "Total Alertas Hoy",
+      "type": "stat",
+      "targets": [
+        {
+          "datasource": { "type": "grafana-postgresql-datasource", "uid": "timescaledb" },
+          "rawSql": "SELECT count(*) AS value, now() AS time FROM alerts WHERE created_at::date = current_date",
+          "format": "table",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "datasource": { "type": "grafana-postgresql-datasource", "uid": "timescaledb" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null }
+            ]
+          }
+        }
+      },
+      "gridPos": { "h": 5, "w": 6, "x": 18, "y": 1 },
+      "id": 34,
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] }, "colorMode": "background", "graphMode": "none", "textMode": "value" },
+      "title": "Reglas Activas",
+      "type": "stat",
+      "targets": [
+        {
+          "datasource": { "type": "grafana-postgresql-datasource", "uid": "timescaledb" },
+          "rawSql": "SELECT count(*) AS value, now() AS time FROM alert_rules WHERE enabled = true",
+          "format": "table",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 6 },
+      "id": 301,
+      "title": "Alertas por Dia (Ultima Semana)",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "grafana-postgresql-datasource", "uid": "timescaledb" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "drawStyle": "bars", "fillOpacity": 80, "lineWidth": 1, "stacking": { "mode": "normal" } }
+        },
+        "overrides": [
+          {
+            "matcher": { "id": "byName", "options": "Pendientes" },
+            "properties": [{ "id": "color", "value": { "fixedColor": "orange", "mode": "fixed" } }]
+          },
+          {
+            "matcher": { "id": "byName", "options": "Resueltas" },
+            "properties": [{ "id": "color", "value": { "fixedColor": "green", "mode": "fixed" } }]
+          }
+        ]
+      },
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 7 },
+      "id": 35,
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
+      "title": "Alertas por Dia",
+      "type": "timeseries",
+      "targets": [
+        {
+          "datasource": { "type": "grafana-postgresql-datasource", "uid": "timescaledb" },
+          "rawSql": "SELECT date_trunc('day', created_at) AS time, count(*) FILTER (WHERE status = 'pending') AS \"Pendientes\", count(*) FILTER (WHERE status = 'resolved') AS \"Resueltas\" FROM alerts WHERE created_at > now() - interval '7 days' GROUP BY 1 ORDER BY 1",
+          "format": "table",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 15 },
+      "id": 302,
+      "title": "Alertas Activas",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "grafana-postgresql-datasource", "uid": "timescaledb" },
+      "fieldConfig": {
+        "defaults": {
+          "custom": { "align": "auto", "displayMode": "auto" }
+        }
+      },
+      "gridPos": { "h": 10, "w": 24, "x": 0, "y": 16 },
+      "id": 36,
+      "options": { "showHeader": true, "sortBy": [{ "displayName": "creada", "desc": true }] },
+      "title": "Detalle de Alertas Recientes",
+      "type": "table",
+      "targets": [
+        {
+          "datasource": { "type": "grafana-postgresql-datasource", "uid": "timescaledb" },
+          "rawSql": "SELECT a.created_at AS \"creada\", d.name AS \"dispositivo\", ar.measurement AS \"medicion\", a.triggered_value AS \"valor\", CONCAT(COALESCE(ar.min_threshold::text, '—'), ' ~ ', COALESCE(ar.max_threshold::text, '—')) AS \"rango\", a.status AS \"estado\" FROM alerts a JOIN alert_rules ar ON a.alert_rule_id = ar.id JOIN devices d ON ar.device_id = d.id ORDER BY a.created_at DESC LIMIT 50",
+          "format": "table",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 26 },
+      "id": 303,
+      "title": "Alertas por Dispositivo",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "grafana-postgresql-datasource", "uid": "timescaledb" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" }
+        }
+      },
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 27 },
+      "id": 37,
+      "options": { "legend": { "displayMode": "list", "placement": "right" }, "tooltip": { "mode": "single" }, "pieType": "donut", "reduceOptions": { "calcs": ["sum"] } },
+      "title": "Distribucion de Alertas por Dispositivo (7d)",
+      "type": "piechart",
+      "targets": [
+        {
+          "datasource": { "type": "grafana-postgresql-datasource", "uid": "timescaledb" },
+          "rawSql": "SELECT d.name AS metric, count(*) AS value FROM alerts a JOIN alert_rules ar ON a.alert_rule_id = ar.id JOIN devices d ON ar.device_id = d.id WHERE a.created_at > now() - interval '7 days' GROUP BY d.name ORDER BY count(*) DESC LIMIT 10",
+          "format": "table",
+          "refId": "A"
+        }
+      ]
     }
   ],
+  "refresh": "30s",
   "schemaVersion": 39,
-  "tags": [],
-  "templating": {
-    "list": []
-  },
-  "time": {
-    "from": "now-7d",
-    "to": "now"
-  },
+  "tags": ["invernadero", "alertas"],
+  "templating": { "list": [] },
+  "time": { "from": "now-7d", "to": "now" },
   "timepicker": {},
-  "timezone": "browser",
-  "title": "Alertas por día",
-  "uid": "bfl5rwgctc4qod",
-  "version": 1,
-  "weekStart": ""
+  "timezone": "America/Bogota",
+  "title": "Alertas y Anomalias",
+  "uid": "alertas",
+  "version": 1
 }

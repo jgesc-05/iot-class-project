@@ -1,154 +1,456 @@
 {
-  "annotations": {
-    "list": [
-      {
-        "builtIn": 1,
-        "datasource": {
-          "type": "grafana",
-          "uid": "-- Grafana --"
-        },
-        "enable": true,
-        "hide": true,
-        "iconColor": "rgba(0, 211, 255, 1)",
-        "name": "Annotations & Alerts",
-        "type": "dashboard"
-      }
-    ]
-  },
+  "annotations": { "list": [] },
   "editable": true,
   "fiscalYearStartMonth": 0,
-  "graphTooltip": 0,
-  "id": 1,
+  "graphTooltip": 1,
+  "id": null,
   "links": [],
   "panels": [
     {
-      "datasource": {
-        "type": "grafana-postgresql-datasource",
-        "uid": "timescaledb"
-      },
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 0 },
+      "id": 100,
+      "title": "Estado Actual del Invernadero",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "grafana-postgresql-datasource", "uid": "timescaledb" },
       "fieldConfig": {
         "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 0,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "insertNulls": false,
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "decimals": 0,
-          "mappings": [],
+          "color": { "mode": "thresholds" },
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
+              { "color": "red", "value": null },
+              { "color": "yellow", "value": 22 },
+              { "color": "green", "value": 24 },
+              { "color": "yellow", "value": 30 },
+              { "color": "red", "value": 32 }
             ]
           },
-          "unit": "celsius"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 0
-      },
-      "id": 1,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "single",
-          "sort": "none"
+          "unit": "celsius",
+          "min": 15,
+          "max": 40
         }
       },
+      "gridPos": { "h": 6, "w": 4, "x": 0, "y": 1 },
+      "id": 1,
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] }, "showThresholdLabels": false, "showThresholdMarkers": true, "orientation": "auto" },
+      "title": "Temperatura Ambiente",
+      "type": "gauge",
       "targets": [
         {
-          "datasource": {
-            "type": "grafana-postgresql-datasource",
-            "uid": "timescaledb"
-          },
-          "editorMode": "code",
+          "datasource": { "type": "grafana-postgresql-datasource", "uid": "timescaledb" },
+          "rawSql": "SELECT time, value FROM metrics WHERE device_id = 'sensor-temp-amb' ORDER BY time DESC LIMIT 1",
           "format": "table",
-          "rawQuery": true,
-          "rawSql": "SELECT\n  time AS \"time\",\n  value\nFROM metrics\nWHERE\n  device_id = 'sensor-temp-a'\n  AND $__timeFilter(time)\nORDER BY time",
-          "refId": "A",
-          "sql": {
-            "columns": [
-              {
-                "parameters": [],
-                "type": "function"
-              }
-            ],
-            "groupBy": [
-              {
-                "property": {
-                  "type": "string"
-                },
-                "type": "groupBy"
-              }
-            ],
-            "limit": 50
-          }
+          "refId": "A"
         }
-      ],
-      "title": "Temperatura ambiente — sensor-temp-a",
-      "type": "timeseries"
+      ]
+    },
+    {
+      "datasource": { "type": "grafana-postgresql-datasource", "uid": "timescaledb" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "yellow", "value": 65 },
+              { "color": "green", "value": 68 },
+              { "color": "yellow", "value": 82 },
+              { "color": "red", "value": 85 }
+            ]
+          },
+          "unit": "humidity",
+          "min": 40,
+          "max": 100
+        }
+      },
+      "gridPos": { "h": 6, "w": 4, "x": 4, "y": 1 },
+      "id": 2,
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] }, "showThresholdLabels": false, "showThresholdMarkers": true, "orientation": "auto" },
+      "title": "Humedad Ambiente",
+      "type": "gauge",
+      "targets": [
+        {
+          "datasource": { "type": "grafana-postgresql-datasource", "uid": "timescaledb" },
+          "rawSql": "SELECT time, value FROM metrics WHERE device_id = 'sensor-hum-amb' ORDER BY time DESC LIMIT 1",
+          "format": "table",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "datasource": { "type": "grafana-postgresql-datasource", "uid": "timescaledb" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 800 },
+              { "color": "red", "value": 900 }
+            ]
+          },
+          "unit": "ppm",
+          "min": 300,
+          "max": 1200
+        }
+      },
+      "gridPos": { "h": 6, "w": 4, "x": 8, "y": 1 },
+      "id": 3,
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] }, "showThresholdLabels": false, "showThresholdMarkers": true, "orientation": "auto" },
+      "title": "CO2",
+      "type": "gauge",
+      "targets": [
+        {
+          "datasource": { "type": "grafana-postgresql-datasource", "uid": "timescaledb" },
+          "rawSql": "SELECT time, value FROM metrics WHERE device_id = 'sensor-co2' ORDER BY time DESC LIMIT 1",
+          "format": "table",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "datasource": { "type": "grafana-postgresql-datasource", "uid": "timescaledb" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "yellow", "value": 20000 },
+              { "color": "green", "value": 25000 },
+              { "color": "yellow", "value": 50000 },
+              { "color": "red", "value": 55000 }
+            ]
+          },
+          "unit": "lux",
+          "min": 0,
+          "max": 65000
+        }
+      },
+      "gridPos": { "h": 6, "w": 4, "x": 12, "y": 1 },
+      "id": 4,
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] }, "showThresholdLabels": false, "showThresholdMarkers": true, "orientation": "auto" },
+      "title": "Luminosidad",
+      "type": "gauge",
+      "targets": [
+        {
+          "datasource": { "type": "grafana-postgresql-datasource", "uid": "timescaledb" },
+          "rawSql": "SELECT time, value FROM metrics WHERE device_id = 'sensor-lux' ORDER BY time DESC LIMIT 1",
+          "format": "table",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "datasource": { "type": "grafana-postgresql-datasource", "uid": "timescaledb" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "yellow", "value": 6.0 },
+              { "color": "green", "value": 6.2 },
+              { "color": "yellow", "value": 7.2 },
+              { "color": "red", "value": 7.5 }
+            ]
+          },
+          "unit": "pH",
+          "min": 4,
+          "max": 9,
+          "decimals": 1
+        }
+      },
+      "gridPos": { "h": 6, "w": 4, "x": 16, "y": 1 },
+      "id": 5,
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] }, "showThresholdLabels": false, "showThresholdMarkers": true, "orientation": "auto" },
+      "title": "pH Agua (Prom.)",
+      "type": "gauge",
+      "targets": [
+        {
+          "datasource": { "type": "grafana-postgresql-datasource", "uid": "timescaledb" },
+          "rawSql": "SELECT time, avg(value) as value FROM (SELECT time, value FROM metrics WHERE device_id IN ('sensor-ph-a','sensor-ph-b') ORDER BY time DESC LIMIT 2) sub GROUP BY time ORDER BY time DESC LIMIT 1",
+          "format": "table",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "datasource": { "type": "grafana-postgresql-datasource", "uid": "timescaledb" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "yellow", "value": 1.6 },
+              { "color": "green", "value": 1.7 },
+              { "color": "yellow", "value": 2.1 },
+              { "color": "red", "value": 2.2 }
+            ]
+          },
+          "unit": "volt",
+          "min": 1.0,
+          "max": 3.0,
+          "decimals": 2
+        }
+      },
+      "gridPos": { "h": 6, "w": 4, "x": 20, "y": 1 },
+      "id": 6,
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] }, "showThresholdLabels": false, "showThresholdMarkers": true, "orientation": "auto" },
+      "title": "Hum. Suelo (Prom.)",
+      "type": "gauge",
+      "targets": [
+        {
+          "datasource": { "type": "grafana-postgresql-datasource", "uid": "timescaledb" },
+          "rawSql": "SELECT time, avg(value) as value FROM (SELECT time, value FROM metrics WHERE device_id IN ('sensor-suelo-a','sensor-suelo-b') ORDER BY time DESC LIMIT 2) sub GROUP BY time ORDER BY time DESC LIMIT 1",
+          "format": "table",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 7 },
+      "id": 101,
+      "title": "Tendencias - Ultimas 2 Horas",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "grafana-postgresql-datasource", "uid": "timescaledb" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "drawStyle": "line", "fillOpacity": 10, "lineWidth": 2, "pointSize": 3, "spanNulls": true },
+          "unit": "celsius"
+        }
+      },
+      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 8 },
+      "id": 10,
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
+      "title": "Temperatura y Humedad Ambiente",
+      "type": "timeseries",
+      "targets": [
+        {
+          "datasource": { "type": "grafana-postgresql-datasource", "uid": "timescaledb" },
+          "rawSql": "SELECT time_bucket('1 minute', time) AS time, avg(value) AS \"Temp °C\" FROM metrics WHERE device_id = 'sensor-temp-amb' AND time > now() - interval '2 hours' GROUP BY 1 ORDER BY 1",
+          "format": "table",
+          "refId": "A"
+        },
+        {
+          "datasource": { "type": "grafana-postgresql-datasource", "uid": "timescaledb" },
+          "rawSql": "SELECT time_bucket('1 minute', time) AS time, avg(value) AS \"Humedad %\" FROM metrics WHERE device_id = 'sensor-hum-amb' AND time > now() - interval '2 hours' GROUP BY 1 ORDER BY 1",
+          "format": "table",
+          "refId": "B"
+        }
+      ]
+    },
+    {
+      "datasource": { "type": "grafana-postgresql-datasource", "uid": "timescaledb" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "drawStyle": "line", "fillOpacity": 10, "lineWidth": 2, "pointSize": 3, "spanNulls": true },
+          "unit": "ppm"
+        }
+      },
+      "gridPos": { "h": 8, "w": 8, "x": 8, "y": 8 },
+      "id": 11,
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
+      "title": "CO2",
+      "type": "timeseries",
+      "targets": [
+        {
+          "datasource": { "type": "grafana-postgresql-datasource", "uid": "timescaledb" },
+          "rawSql": "SELECT time_bucket('1 minute', time) AS time, avg(value) AS \"CO2 ppm\" FROM metrics WHERE device_id = 'sensor-co2' AND time > now() - interval '2 hours' GROUP BY 1 ORDER BY 1",
+          "format": "table",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "datasource": { "type": "grafana-postgresql-datasource", "uid": "timescaledb" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "drawStyle": "line", "fillOpacity": 10, "lineWidth": 2, "pointSize": 3, "spanNulls": true },
+          "unit": "lux"
+        }
+      },
+      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 8 },
+      "id": 12,
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
+      "title": "Luminosidad",
+      "type": "timeseries",
+      "targets": [
+        {
+          "datasource": { "type": "grafana-postgresql-datasource", "uid": "timescaledb" },
+          "rawSql": "SELECT time_bucket('1 minute', time) AS time, avg(value) AS \"Lux\" FROM metrics WHERE device_id = 'sensor-lux' AND time > now() - interval '2 hours' GROUP BY 1 ORDER BY 1",
+          "format": "table",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 16 },
+      "id": 102,
+      "title": "Sustrato y Riego",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "grafana-postgresql-datasource", "uid": "timescaledb" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "drawStyle": "line", "fillOpacity": 10, "lineWidth": 2, "spanNulls": true },
+          "unit": "volt"
+        }
+      },
+      "gridPos": { "h": 7, "w": 8, "x": 0, "y": 17 },
+      "id": 13,
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
+      "title": "Humedad Suelo (Cama A vs B)",
+      "type": "timeseries",
+      "targets": [
+        {
+          "datasource": { "type": "grafana-postgresql-datasource", "uid": "timescaledb" },
+          "rawSql": "SELECT time_bucket('1 minute', time) AS time, avg(value) AS \"Cama A\" FROM metrics WHERE device_id = 'sensor-suelo-a' AND time > now() - interval '2 hours' GROUP BY 1 ORDER BY 1",
+          "format": "table",
+          "refId": "A"
+        },
+        {
+          "datasource": { "type": "grafana-postgresql-datasource", "uid": "timescaledb" },
+          "rawSql": "SELECT time_bucket('1 minute', time) AS time, avg(value) AS \"Cama B\" FROM metrics WHERE device_id = 'sensor-suelo-b' AND time > now() - interval '2 hours' GROUP BY 1 ORDER BY 1",
+          "format": "table",
+          "refId": "B"
+        }
+      ]
+    },
+    {
+      "datasource": { "type": "grafana-postgresql-datasource", "uid": "timescaledb" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "drawStyle": "line", "fillOpacity": 10, "lineWidth": 2, "spanNulls": true },
+          "unit": "celsius"
+        }
+      },
+      "gridPos": { "h": 7, "w": 8, "x": 8, "y": 17 },
+      "id": 14,
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
+      "title": "Temperatura Suelo (Cama A vs B)",
+      "type": "timeseries",
+      "targets": [
+        {
+          "datasource": { "type": "grafana-postgresql-datasource", "uid": "timescaledb" },
+          "rawSql": "SELECT time_bucket('1 minute', time) AS time, avg(value) AS \"Cama A\" FROM metrics WHERE device_id = 'sensor-temp-suelo-a' AND time > now() - interval '2 hours' GROUP BY 1 ORDER BY 1",
+          "format": "table",
+          "refId": "A"
+        },
+        {
+          "datasource": { "type": "grafana-postgresql-datasource", "uid": "timescaledb" },
+          "rawSql": "SELECT time_bucket('1 minute', time) AS time, avg(value) AS \"Cama B\" FROM metrics WHERE device_id = 'sensor-temp-suelo-b' AND time > now() - interval '2 hours' GROUP BY 1 ORDER BY 1",
+          "format": "table",
+          "refId": "B"
+        }
+      ]
+    },
+    {
+      "datasource": { "type": "grafana-postgresql-datasource", "uid": "timescaledb" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "drawStyle": "line", "fillOpacity": 10, "lineWidth": 2, "spanNulls": true },
+          "unit": "pH",
+          "decimals": 1
+        }
+      },
+      "gridPos": { "h": 7, "w": 8, "x": 16, "y": 17 },
+      "id": 15,
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
+      "title": "pH Agua de Riego (Cama A vs B)",
+      "type": "timeseries",
+      "targets": [
+        {
+          "datasource": { "type": "grafana-postgresql-datasource", "uid": "timescaledb" },
+          "rawSql": "SELECT time_bucket('1 minute', time) AS time, avg(value) AS \"Cama A\" FROM metrics WHERE device_id = 'sensor-ph-a' AND time > now() - interval '2 hours' GROUP BY 1 ORDER BY 1",
+          "format": "table",
+          "refId": "A"
+        },
+        {
+          "datasource": { "type": "grafana-postgresql-datasource", "uid": "timescaledb" },
+          "rawSql": "SELECT time_bucket('1 minute', time) AS time, avg(value) AS \"Cama B\" FROM metrics WHERE device_id = 'sensor-ph-b' AND time > now() - interval '2 hours' GROUP BY 1 ORDER BY 1",
+          "format": "table",
+          "refId": "B"
+        }
+      ]
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 24 },
+      "id": 103,
+      "title": "Extractores - Corriente",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "grafana-postgresql-datasource", "uid": "timescaledb" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "drawStyle": "line", "fillOpacity": 5, "lineWidth": 2, "spanNulls": true },
+          "unit": "amp"
+        }
+      },
+      "gridPos": { "h": 7, "w": 24, "x": 0, "y": 25 },
+      "id": 16,
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
+      "title": "Corriente de Extractores",
+      "type": "timeseries",
+      "targets": [
+        {
+          "datasource": { "type": "grafana-postgresql-datasource", "uid": "timescaledb" },
+          "rawSql": "SELECT time_bucket('1 minute', time) AS time, avg(value) AS \"Extractor NE\" FROM metrics WHERE device_id = 'sensor-ext-ne' AND time > now() - interval '2 hours' GROUP BY 1 ORDER BY 1",
+          "format": "table",
+          "refId": "A"
+        },
+        {
+          "datasource": { "type": "grafana-postgresql-datasource", "uid": "timescaledb" },
+          "rawSql": "SELECT time_bucket('1 minute', time) AS time, avg(value) AS \"Extractor NO\" FROM metrics WHERE device_id = 'sensor-ext-no' AND time > now() - interval '2 hours' GROUP BY 1 ORDER BY 1",
+          "format": "table",
+          "refId": "B"
+        },
+        {
+          "datasource": { "type": "grafana-postgresql-datasource", "uid": "timescaledb" },
+          "rawSql": "SELECT time_bucket('1 minute', time) AS time, avg(value) AS \"Extractor SE\" FROM metrics WHERE device_id = 'sensor-ext-se' AND time > now() - interval '2 hours' GROUP BY 1 ORDER BY 1",
+          "format": "table",
+          "refId": "C"
+        },
+        {
+          "datasource": { "type": "grafana-postgresql-datasource", "uid": "timescaledb" },
+          "rawSql": "SELECT time_bucket('1 minute', time) AS time, avg(value) AS \"Extractor SO\" FROM metrics WHERE device_id = 'sensor-ext-so' AND time > now() - interval '2 hours' GROUP BY 1 ORDER BY 1",
+          "format": "table",
+          "refId": "D"
+        }
+      ]
     }
   ],
   "refresh": "5s",
   "schemaVersion": 39,
-  "tags": [],
-  "templating": {
-    "list": []
-  },
-  "time": {
-    "from": "now-15m",
-    "to": "now"
-  },
+  "tags": ["invernadero", "overview"],
+  "templating": { "list": [] },
+  "time": { "from": "now-2h", "to": "now" },
   "timepicker": {},
-  "timezone": "browser",
-  "title": "Invernadero - vista general",
-  "uid": "efk4rh480i680e",
-  "version": 1,
-  "weekStart": ""
+  "timezone": "America/Bogota",
+  "title": "Vista General del Invernadero",
+  "uid": "overview",
+  "version": 1
 }

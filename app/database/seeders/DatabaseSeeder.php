@@ -21,46 +21,71 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
+        // Dispositivos del invernadero de rosas Freedom/Explorer para exportacion.
+        // Distribucion segun plano: pasillo central, cama A (norte), cama B (sur),
+        // 4 extractores en esquinas, sensores foliares en pasillos norte/sur.
         $devices = [
-            ['name' => 'DHT22 Bloque A',           'device_id' => 'sensor-temp-a',       'type' => 'real',    'measurement' => 'temperatura_ambiente', 'unit' => '°C',    'min' => 12,    'max' => 30,    'meta' => ['zona' => 'bloque-a']],
-            ['name' => 'DHT22 Bloque B',           'device_id' => 'sensor-hum-a',        'type' => 'real',    'measurement' => 'humedad_ambiente',     'unit' => '%',     'min' => 50,    'max' => 85,    'meta' => ['zona' => 'bloque-a']],
-            ['name' => 'Capacitivo Bloque A #1',   'device_id' => 'sensor-suelo-a1',     'type' => 'real',    'measurement' => 'humedad_sustrato',     'unit' => '%',     'min' => 30,    'max' => 80,    'meta' => ['zona' => 'bloque-a']],
-            ['name' => 'Capacitivo Bloque A #2',   'device_id' => 'sensor-suelo-a2',     'type' => 'real',    'measurement' => 'humedad_sustrato',     'unit' => '%',     'min' => 30,    'max' => 80,    'meta' => ['zona' => 'bloque-a']],
-            ['name' => 'MH-Z19 CO2',               'device_id' => 'sensor-co2',          'type' => 'real',    'measurement' => 'co2',                  'unit' => 'ppm',   'min' => null,  'max' => 1500,  'meta' => ['zona' => 'central']],
-            ['name' => 'BH1750 Luminosidad',       'device_id' => 'sensor-lux',          'type' => 'real',    'measurement' => 'luminosidad',          'unit' => 'lux',   'min' => null,  'max' => null,  'meta' => ['zona' => 'central']],
-            ['name' => 'Sonda pH sustrato',        'device_id' => 'sensor-ph',           'type' => 'real',    'measurement' => 'ph_sustrato',          'unit' => '',      'min' => 5.2,   'max' => 7.0,   'meta' => ['zona' => 'fertirriego']],
-            ['name' => 'Sonda EC sustrato',        'device_id' => 'sensor-ec',           'type' => 'real',    'measurement' => 'ec',                   'unit' => 'mS/cm', 'min' => 1.0,   'max' => 3.0,   'meta' => ['zona' => 'fertirriego']],
-            ['name' => 'Twin temperatura',         'device_id' => 'twin-temp',           'type' => 'twin',    'measurement' => 'temperatura_ambiente', 'unit' => '°C',    'min' => 12,    'max' => 30,    'meta' => ['twin_of' => 'sensor-temp-a']],
-            ['name' => 'Twin humedad',             'device_id' => 'twin-hum',            'type' => 'twin',    'measurement' => 'humedad_ambiente',     'unit' => '%',     'min' => 50,    'max' => 85,    'meta' => ['twin_of' => 'sensor-hum-a']],
-            ['name' => 'OWM temperatura ext.',     'device_id' => 'api-temp-ext',        'type' => 'api',     'measurement' => 'temperatura_exterior', 'unit' => '°C',    'min' => null,  'max' => null,  'meta' => ['provider' => 'openweathermap']],
-            ['name' => 'OWM humedad ext.',         'device_id' => 'api-hum-ext',         'type' => 'api',     'measurement' => 'humedad_exterior',     'unit' => '%',     'min' => null,  'max' => null,  'meta' => ['provider' => 'openweathermap']],
-            ['name' => 'Dataset temperatura 7d',   'device_id' => 'dataset-temp',        'type' => 'dataset', 'measurement' => 'temperatura_ambiente', 'unit' => '°C',    'min' => 12,    'max' => 30,    'meta' => ['source' => 'csv_7d']],
-            ['name' => 'Dataset EC 7d',            'device_id' => 'dataset-ec',          'type' => 'dataset', 'measurement' => 'ec',                   'unit' => 'mS/cm', 'min' => 1.0,   'max' => 3.0,   'meta' => ['source' => 'csv_7d']],
+            // --- Pasillo central ---
+            ['name' => 'DHT22 Pasillo Central (Temp)',  'device_id' => 'sensor-temp-amb',     'type' => 'real', 'measurement' => 'temperatura_ambiente', 'unit' => '°C',  'min' => 22,    'max' => 32,    'meta' => ['zona' => 'pasillo-central', 'modelo' => 'DHT22']],
+            ['name' => 'DHT22 Pasillo Central (Hum)',   'device_id' => 'sensor-hum-amb',      'type' => 'real', 'measurement' => 'humedad_ambiente',     'unit' => '%',   'min' => 65,    'max' => 85,    'meta' => ['zona' => 'pasillo-central', 'modelo' => 'DHT22']],
+            ['name' => 'MH-Z19C CO2',                   'device_id' => 'sensor-co2',          'type' => 'real', 'measurement' => 'co2',                  'unit' => 'ppm', 'min' => 400,   'max' => 900,   'meta' => ['zona' => 'pasillo-central', 'modelo' => 'MH-Z19C']],
+            ['name' => 'BH1750 Luminosidad',             'device_id' => 'sensor-lux',          'type' => 'real', 'measurement' => 'luminosidad',          'unit' => 'lux', 'min' => 20000, 'max' => 55000, 'meta' => ['zona' => 'pasillo-central', 'modelo' => 'BH1750FVI']],
+
+            // --- Cama A (norte) ---
+            ['name' => 'SEN0193 Humedad Suelo A',       'device_id' => 'sensor-suelo-a',      'type' => 'real', 'measurement' => 'humedad_suelo',        'unit' => 'V',   'min' => 1.6,   'max' => 2.2,   'meta' => ['zona' => 'cama-a', 'modelo' => 'SEN0193']],
+            ['name' => 'DS18B20 Temp Suelo A',           'device_id' => 'sensor-temp-suelo-a', 'type' => 'real', 'measurement' => 'temperatura_suelo',    'unit' => '°C',  'min' => 20,    'max' => 28,    'meta' => ['zona' => 'cama-a', 'modelo' => 'DS18B20']],
+            ['name' => 'SEN0161 pH Agua A',              'device_id' => 'sensor-ph-a',         'type' => 'real', 'measurement' => 'ph_agua',              'unit' => 'pH',  'min' => 6.0,   'max' => 7.5,   'meta' => ['zona' => 'cama-a', 'modelo' => 'SEN0161-V2']],
+            ['name' => 'AS7341 Color Boton A',           'device_id' => 'sensor-color-a',      'type' => 'real', 'measurement' => 'color_boton',          'unit' => 'nm',  'min' => 450,   'max' => 650,   'meta' => ['zona' => 'cama-a', 'modelo' => 'AS7341']],
+            ['name' => 'VL53L1X Altura Tallo A',         'device_id' => 'sensor-altura-a',     'type' => 'real', 'measurement' => 'altura_tallo',         'unit' => 'mm',  'min' => 100,   'max' => 1500,  'meta' => ['zona' => 'cama-a', 'modelo' => 'VL53L1X']],
+
+            // --- Cama B (sur) ---
+            ['name' => 'SEN0193 Humedad Suelo B',       'device_id' => 'sensor-suelo-b',      'type' => 'real', 'measurement' => 'humedad_suelo',        'unit' => 'V',   'min' => 1.6,   'max' => 2.2,   'meta' => ['zona' => 'cama-b', 'modelo' => 'SEN0193']],
+            ['name' => 'DS18B20 Temp Suelo B',           'device_id' => 'sensor-temp-suelo-b', 'type' => 'real', 'measurement' => 'temperatura_suelo',    'unit' => '°C',  'min' => 20,    'max' => 28,    'meta' => ['zona' => 'cama-b', 'modelo' => 'DS18B20']],
+            ['name' => 'SEN0161 pH Agua B',              'device_id' => 'sensor-ph-b',         'type' => 'real', 'measurement' => 'ph_agua',              'unit' => 'pH',  'min' => 6.0,   'max' => 7.5,   'meta' => ['zona' => 'cama-b', 'modelo' => 'SEN0161-V2']],
+            ['name' => 'AS7341 Color Boton B',           'device_id' => 'sensor-color-b',      'type' => 'real', 'measurement' => 'color_boton',          'unit' => 'nm',  'min' => 450,   'max' => 650,   'meta' => ['zona' => 'cama-b', 'modelo' => 'AS7341']],
+            ['name' => 'VL53L1X Altura Tallo B',         'device_id' => 'sensor-altura-b',     'type' => 'real', 'measurement' => 'altura_tallo',         'unit' => 'mm',  'min' => 100,   'max' => 1500,  'meta' => ['zona' => 'cama-b', 'modelo' => 'VL53L1X']],
+
+            // --- Extractores (4 esquinas) ---
+            ['name' => 'DFR0300 Extractor NE',          'device_id' => 'sensor-ext-ne',       'type' => 'real', 'measurement' => 'corriente_extractor',  'unit' => 'A',   'min' => 3.0,   'max' => 10.0,  'meta' => ['zona' => 'extractor-ne', 'modelo' => 'DFR0300']],
+            ['name' => 'DFR0300 Extractor NO',          'device_id' => 'sensor-ext-no',       'type' => 'real', 'measurement' => 'corriente_extractor',  'unit' => 'A',   'min' => 3.0,   'max' => 10.0,  'meta' => ['zona' => 'extractor-no', 'modelo' => 'DFR0300']],
+            ['name' => 'DFR0300 Extractor SE',          'device_id' => 'sensor-ext-se',       'type' => 'real', 'measurement' => 'corriente_extractor',  'unit' => 'A',   'min' => 3.0,   'max' => 10.0,  'meta' => ['zona' => 'extractor-se', 'modelo' => 'DFR0300']],
+            ['name' => 'DFR0300 Extractor SO',          'device_id' => 'sensor-ext-so',       'type' => 'real', 'measurement' => 'corriente_extractor',  'unit' => 'A',   'min' => 3.0,   'max' => 10.0,  'meta' => ['zona' => 'extractor-so', 'modelo' => 'DFR0300']],
+
+            // --- Temperatura foliar (pasillos norte/sur) ---
+            ['name' => 'MLX90640 Temp Foliar Norte',    'device_id' => 'sensor-foliar-n',     'type' => 'real', 'measurement' => 'temperatura_foliar',   'unit' => '°C',  'min' => 24,    'max' => 34,    'meta' => ['zona' => 'pasillo-norte', 'modelo' => 'MLX90640']],
+            ['name' => 'MLX90640 Temp Foliar Sur',      'device_id' => 'sensor-foliar-s',     'type' => 'real', 'measurement' => 'temperatura_foliar',   'unit' => '°C',  'min' => 24,    'max' => 34,    'meta' => ['zona' => 'pasillo-sur', 'modelo' => 'MLX90640']],
+
+            // --- Gemelos digitales ---
+            ['name' => 'Twin Temperatura Ambiente',      'device_id' => 'twin-temp',           'type' => 'twin', 'measurement' => 'temperatura_ambiente', 'unit' => '°C',  'min' => 22,    'max' => 32,    'meta' => ['twin_of' => 'sensor-temp-amb']],
+            ['name' => 'Twin Humedad Ambiente',          'device_id' => 'twin-hum',            'type' => 'twin', 'measurement' => 'humedad_ambiente',     'unit' => '%',   'min' => 65,    'max' => 85,    'meta' => ['twin_of' => 'sensor-hum-amb']],
         ];
 
         $credentials = [];
         foreach ($devices as $d) {
             $plainKey = 'dk_'.bin2hex(random_bytes(16));
 
-            $device = Device::create([
-                'user_id'           => $user->id,
-                'name'              => $d['name'],
-                'device_id'         => $d['device_id'],
-                'type'              => $d['type'],
-                'measurement'       => $d['measurement'],
-                'unit'              => $d['unit'],
-                'api_key_hash'      => hash('sha256', $plainKey),
-                'sample_interval_s' => 15,
-                'metadata'          => $d['meta'],
-            ]);
+            $device = Device::updateOrCreate(
+                ['device_id' => $d['device_id']],
+                [
+                    'user_id'           => $user->id,
+                    'name'              => $d['name'],
+                    'type'              => $d['type'],
+                    'measurement'       => $d['measurement'],
+                    'unit'              => $d['unit'],
+                    'api_key_hash'      => hash('sha256', $plainKey),
+                    'sample_interval_s' => 15,
+                    'metadata'          => $d['meta'],
+                ]
+            );
 
             if ($d['min'] !== null || $d['max'] !== null) {
-                AlertRule::create([
-                    'device_id'     => $device->id,
-                    'measurement'   => $d['measurement'],
-                    'min_threshold' => $d['min'],
-                    'max_threshold' => $d['max'],
-                ]);
+                AlertRule::updateOrCreate(
+                    ['device_id' => $device->id, 'measurement' => $d['measurement']],
+                    [
+                        'min_threshold' => $d['min'],
+                        'max_threshold' => $d['max'],
+                    ]
+                );
             }
 
             $credentials[] = "{$d['device_id']}: {$plainKey}";
@@ -76,13 +101,13 @@ class DatabaseSeeder extends Seeder
 
         if (is_dir(dirname($credPath))) {
             file_put_contents($credPath, $content);
-            $this->command->info("✓ API keys guardadas en docs/DEV_CREDENTIALS.md");
+            $this->command->info("API keys guardadas en docs/DEV_CREDENTIALS.md");
         } else {
-            $this->command->warn("⚠ Carpeta /var/www/docs no existe en el contenedor.");
-            $this->command->warn("  Verifica que ./docs:/var/www/docs esté en docker-compose.yml.");
+            $this->command->warn("Carpeta /var/www/docs no existe en el contenedor.");
+            $this->command->warn("  Verifica que ./docs:/var/www/docs este en docker-compose.yml.");
         }
 
-        $this->command->info("✓ {$user->email} creado");
-        $this->command->info("✓ ".count($devices)." dispositivos creados");
+        $this->command->info("{$user->email} creado");
+        $this->command->info(count($devices)." dispositivos creados");
     }
 }
