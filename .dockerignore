@@ -4,6 +4,9 @@
 .vscode
 node_modules
 vendor
+app/vendor
+app/node_modules
+app/bootstrap/cache
 .env
 .env.*
 docs

@@ -39,8 +39,6 @@ services:
       POSTGRES_PASSWORD: secret
     volumes:
       - db_data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
     networks:
       - iot_net
     healthcheck:
@@ -81,6 +79,8 @@ services:
       GF_SECURITY_ALLOW_EMBEDDING: "true"
       GF_AUTH_ANONYMOUS_ENABLED: "true"
       GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
+      GF_SERVER_ROOT_URL: "http://saturnovm.centralus.cloudapp.azure.com:8000/grafana/"
+      GF_SERVER_SERVE_FROM_SUB_PATH: "true"
     networks:
       - iot_net
     depends_on:
