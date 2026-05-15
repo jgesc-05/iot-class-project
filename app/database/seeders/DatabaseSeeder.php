@@ -26,38 +26,38 @@ class DatabaseSeeder extends Seeder
         // 4 extractores en esquinas, sensores foliares en pasillos norte/sur.
         $devices = [
             // --- Pasillo central ---
-            ['name' => 'DHT22 Pasillo Central (Temp)',  'device_id' => 'sensor-temp-amb',     'type' => 'real', 'measurement' => 'temperatura_ambiente', 'unit' => '°C',  'min' => 22,    'max' => 32,    'meta' => ['zona' => 'pasillo-central', 'modelo' => 'DHT22']],
-            ['name' => 'DHT22 Pasillo Central (Hum)',   'device_id' => 'sensor-hum-amb',      'type' => 'real', 'measurement' => 'humedad_ambiente',     'unit' => '%',   'min' => 65,    'max' => 85,    'meta' => ['zona' => 'pasillo-central', 'modelo' => 'DHT22']],
-            ['name' => 'MH-Z19C CO2',                   'device_id' => 'sensor-co2',          'type' => 'real', 'measurement' => 'co2',                  'unit' => 'ppm', 'min' => 400,   'max' => 900,   'meta' => ['zona' => 'pasillo-central', 'modelo' => 'MH-Z19C']],
-            ['name' => 'BH1750 Luminosidad',             'device_id' => 'sensor-lux',          'type' => 'real', 'measurement' => 'luminosidad',          'unit' => 'lux', 'min' => 20000, 'max' => 55000, 'meta' => ['zona' => 'pasillo-central', 'modelo' => 'BH1750FVI']],
+            ['name' => 'DHT22 Pasillo Central (Temp)',  'device_id' => 'sensor-temp-amb',     'type' => 'real', 'measurement' => 'temperatura_ambiente', 'unit' => '°C',  'min' => 22,    'max' => 32,    'rule_name' => 'Temp ambiente fuera de rango',        'meta' => ['zona' => 'pasillo-central', 'modelo' => 'DHT22']],
+            ['name' => 'DHT22 Pasillo Central (Hum)',   'device_id' => 'sensor-hum-amb',      'type' => 'real', 'measurement' => 'humedad_ambiente',     'unit' => '%',   'min' => 65,    'max' => 85,    'rule_name' => 'Humedad ambiente fuera de rango',     'meta' => ['zona' => 'pasillo-central', 'modelo' => 'DHT22']],
+            ['name' => 'MH-Z19C CO2',                   'device_id' => 'sensor-co2',          'type' => 'real', 'measurement' => 'co2',                  'unit' => 'ppm', 'min' => 400,   'max' => 900,   'rule_name' => 'CO2 fuera de rango',                  'meta' => ['zona' => 'pasillo-central', 'modelo' => 'MH-Z19C']],
+            ['name' => 'BH1750 Luminosidad',             'device_id' => 'sensor-lux',          'type' => 'real', 'measurement' => 'luminosidad',          'unit' => 'lux', 'min' => 20000, 'max' => 55000, 'rule_name' => 'Luminosidad fuera de rango',          'meta' => ['zona' => 'pasillo-central', 'modelo' => 'BH1750FVI']],
 
             // --- Cama A (norte) ---
-            ['name' => 'SEN0193 Humedad Suelo A',       'device_id' => 'sensor-suelo-a',      'type' => 'real', 'measurement' => 'humedad_suelo',        'unit' => 'V',   'min' => 1.6,   'max' => 2.2,   'meta' => ['zona' => 'cama-a', 'modelo' => 'SEN0193']],
-            ['name' => 'DS18B20 Temp Suelo A',           'device_id' => 'sensor-temp-suelo-a', 'type' => 'real', 'measurement' => 'temperatura_suelo',    'unit' => '°C',  'min' => 20,    'max' => 28,    'meta' => ['zona' => 'cama-a', 'modelo' => 'DS18B20']],
-            ['name' => 'SEN0161 pH Agua A',              'device_id' => 'sensor-ph-a',         'type' => 'real', 'measurement' => 'ph_agua',              'unit' => 'pH',  'min' => 6.0,   'max' => 7.5,   'meta' => ['zona' => 'cama-a', 'modelo' => 'SEN0161-V2']],
-            ['name' => 'AS7341 Color Boton A',           'device_id' => 'sensor-color-a',      'type' => 'real', 'measurement' => 'color_boton',          'unit' => 'nm',  'min' => 450,   'max' => 650,   'meta' => ['zona' => 'cama-a', 'modelo' => 'AS7341']],
-            ['name' => 'VL53L1X Altura Tallo A',         'device_id' => 'sensor-altura-a',     'type' => 'real', 'measurement' => 'altura_tallo',         'unit' => 'mm',  'min' => 100,   'max' => 1500,  'meta' => ['zona' => 'cama-a', 'modelo' => 'VL53L1X']],
+            ['name' => 'SEN0193 Humedad Suelo A',       'device_id' => 'sensor-suelo-a',      'type' => 'real', 'measurement' => 'humedad_suelo',        'unit' => 'V',   'min' => 1.6,   'max' => 2.2,   'rule_name' => 'Humedad suelo A fuera de rango',      'meta' => ['zona' => 'cama-a', 'modelo' => 'SEN0193']],
+            ['name' => 'DS18B20 Temp Suelo A',           'device_id' => 'sensor-temp-suelo-a', 'type' => 'real', 'measurement' => 'temperatura_suelo',    'unit' => '°C',  'min' => 20,    'max' => 28,    'rule_name' => 'Temp suelo A fuera de rango',         'meta' => ['zona' => 'cama-a', 'modelo' => 'DS18B20']],
+            ['name' => 'SEN0161 pH Agua A',              'device_id' => 'sensor-ph-a',         'type' => 'real', 'measurement' => 'ph_agua',              'unit' => 'pH',  'min' => 6.0,   'max' => 7.5,   'rule_name' => 'pH agua A fuera de rango',            'meta' => ['zona' => 'cama-a', 'modelo' => 'SEN0161-V2']],
+            ['name' => 'AS7341 Color Boton A',           'device_id' => 'sensor-color-a',      'type' => 'real', 'measurement' => 'color_boton',          'unit' => 'nm',  'min' => 450,   'max' => 650,   'rule_name' => 'Color boton A fuera de rango',        'meta' => ['zona' => 'cama-a', 'modelo' => 'AS7341']],
+            ['name' => 'VL53L1X Altura Tallo A',         'device_id' => 'sensor-altura-a',     'type' => 'real', 'measurement' => 'altura_tallo',         'unit' => 'mm',  'min' => 100,   'max' => 1500,  'rule_name' => 'Altura tallo A fuera de rango',       'meta' => ['zona' => 'cama-a', 'modelo' => 'VL53L1X']],
 
             // --- Cama B (sur) ---
-            ['name' => 'SEN0193 Humedad Suelo B',       'device_id' => 'sensor-suelo-b',      'type' => 'real', 'measurement' => 'humedad_suelo',        'unit' => 'V',   'min' => 1.6,   'max' => 2.2,   'meta' => ['zona' => 'cama-b', 'modelo' => 'SEN0193']],
-            ['name' => 'DS18B20 Temp Suelo B',           'device_id' => 'sensor-temp-suelo-b', 'type' => 'real', 'measurement' => 'temperatura_suelo',    'unit' => '°C',  'min' => 20,    'max' => 28,    'meta' => ['zona' => 'cama-b', 'modelo' => 'DS18B20']],
-            ['name' => 'SEN0161 pH Agua B',              'device_id' => 'sensor-ph-b',         'type' => 'real', 'measurement' => 'ph_agua',              'unit' => 'pH',  'min' => 6.0,   'max' => 7.5,   'meta' => ['zona' => 'cama-b', 'modelo' => 'SEN0161-V2']],
-            ['name' => 'AS7341 Color Boton B',           'device_id' => 'sensor-color-b',      'type' => 'real', 'measurement' => 'color_boton',          'unit' => 'nm',  'min' => 450,   'max' => 650,   'meta' => ['zona' => 'cama-b', 'modelo' => 'AS7341']],
-            ['name' => 'VL53L1X Altura Tallo B',         'device_id' => 'sensor-altura-b',     'type' => 'real', 'measurement' => 'altura_tallo',         'unit' => 'mm',  'min' => 100,   'max' => 1500,  'meta' => ['zona' => 'cama-b', 'modelo' => 'VL53L1X']],
+            ['name' => 'SEN0193 Humedad Suelo B',       'device_id' => 'sensor-suelo-b',      'type' => 'real', 'measurement' => 'humedad_suelo',        'unit' => 'V',   'min' => 1.6,   'max' => 2.2,   'rule_name' => 'Humedad suelo B fuera de rango',      'meta' => ['zona' => 'cama-b', 'modelo' => 'SEN0193']],
+            ['name' => 'DS18B20 Temp Suelo B',           'device_id' => 'sensor-temp-suelo-b', 'type' => 'real', 'measurement' => 'temperatura_suelo',    'unit' => '°C',  'min' => 20,    'max' => 28,    'rule_name' => 'Temp suelo B fuera de rango',         'meta' => ['zona' => 'cama-b', 'modelo' => 'DS18B20']],
+            ['name' => 'SEN0161 pH Agua B',              'device_id' => 'sensor-ph-b',         'type' => 'real', 'measurement' => 'ph_agua',              'unit' => 'pH',  'min' => 6.0,   'max' => 7.5,   'rule_name' => 'pH agua B fuera de rango',            'meta' => ['zona' => 'cama-b', 'modelo' => 'SEN0161-V2']],
+            ['name' => 'AS7341 Color Boton B',           'device_id' => 'sensor-color-b',      'type' => 'real', 'measurement' => 'color_boton',          'unit' => 'nm',  'min' => 450,   'max' => 650,   'rule_name' => 'Color boton B fuera de rango',        'meta' => ['zona' => 'cama-b', 'modelo' => 'AS7341']],
+            ['name' => 'VL53L1X Altura Tallo B',         'device_id' => 'sensor-altura-b',     'type' => 'real', 'measurement' => 'altura_tallo',         'unit' => 'mm',  'min' => 100,   'max' => 1500,  'rule_name' => 'Altura tallo B fuera de rango',       'meta' => ['zona' => 'cama-b', 'modelo' => 'VL53L1X']],
 
             // --- Extractores (4 esquinas) ---
-            ['name' => 'DFR0300 Extractor NE',          'device_id' => 'sensor-ext-ne',       'type' => 'real', 'measurement' => 'corriente_extractor',  'unit' => 'A',   'min' => 3.0,   'max' => 10.0,  'meta' => ['zona' => 'extractor-ne', 'modelo' => 'DFR0300']],
-            ['name' => 'DFR0300 Extractor NO',          'device_id' => 'sensor-ext-no',       'type' => 'real', 'measurement' => 'corriente_extractor',  'unit' => 'A',   'min' => 3.0,   'max' => 10.0,  'meta' => ['zona' => 'extractor-no', 'modelo' => 'DFR0300']],
-            ['name' => 'DFR0300 Extractor SE',          'device_id' => 'sensor-ext-se',       'type' => 'real', 'measurement' => 'corriente_extractor',  'unit' => 'A',   'min' => 3.0,   'max' => 10.0,  'meta' => ['zona' => 'extractor-se', 'modelo' => 'DFR0300']],
-            ['name' => 'DFR0300 Extractor SO',          'device_id' => 'sensor-ext-so',       'type' => 'real', 'measurement' => 'corriente_extractor',  'unit' => 'A',   'min' => 3.0,   'max' => 10.0,  'meta' => ['zona' => 'extractor-so', 'modelo' => 'DFR0300']],
+            ['name' => 'DFR0300 Extractor NE',          'device_id' => 'sensor-ext-ne',       'type' => 'real', 'measurement' => 'corriente_extractor',  'unit' => 'A',   'min' => 3.0,   'max' => 10.0,  'rule_name' => 'Corriente extractor NE fuera de rango', 'meta' => ['zona' => 'extractor-ne', 'modelo' => 'DFR0300']],
+            ['name' => 'DFR0300 Extractor NO',          'device_id' => 'sensor-ext-no',       'type' => 'real', 'measurement' => 'corriente_extractor',  'unit' => 'A',   'min' => 3.0,   'max' => 10.0,  'rule_name' => 'Corriente extractor NO fuera de rango', 'meta' => ['zona' => 'extractor-no', 'modelo' => 'DFR0300']],
+            ['name' => 'DFR0300 Extractor SE',          'device_id' => 'sensor-ext-se',       'type' => 'real', 'measurement' => 'corriente_extractor',  'unit' => 'A',   'min' => 3.0,   'max' => 10.0,  'rule_name' => 'Corriente extractor SE fuera de rango', 'meta' => ['zona' => 'extractor-se', 'modelo' => 'DFR0300']],
+            ['name' => 'DFR0300 Extractor SO',          'device_id' => 'sensor-ext-so',       'type' => 'real', 'measurement' => 'corriente_extractor',  'unit' => 'A',   'min' => 3.0,   'max' => 10.0,  'rule_name' => 'Corriente extractor SO fuera de rango', 'meta' => ['zona' => 'extractor-so', 'modelo' => 'DFR0300']],
 
             // --- Temperatura foliar (pasillos norte/sur) ---
-            ['name' => 'MLX90640 Temp Foliar Norte',    'device_id' => 'sensor-foliar-n',     'type' => 'real', 'measurement' => 'temperatura_foliar',   'unit' => '°C',  'min' => 24,    'max' => 34,    'meta' => ['zona' => 'pasillo-norte', 'modelo' => 'MLX90640']],
-            ['name' => 'MLX90640 Temp Foliar Sur',      'device_id' => 'sensor-foliar-s',     'type' => 'real', 'measurement' => 'temperatura_foliar',   'unit' => '°C',  'min' => 24,    'max' => 34,    'meta' => ['zona' => 'pasillo-sur', 'modelo' => 'MLX90640']],
+            ['name' => 'MLX90640 Temp Foliar Norte',    'device_id' => 'sensor-foliar-n',     'type' => 'real', 'measurement' => 'temperatura_foliar',   'unit' => '°C',  'min' => 24,    'max' => 34,    'rule_name' => 'Temp foliar norte fuera de rango',    'meta' => ['zona' => 'pasillo-norte', 'modelo' => 'MLX90640']],
+            ['name' => 'MLX90640 Temp Foliar Sur',      'device_id' => 'sensor-foliar-s',     'type' => 'real', 'measurement' => 'temperatura_foliar',   'unit' => '°C',  'min' => 24,    'max' => 34,    'rule_name' => 'Temp foliar sur fuera de rango',      'meta' => ['zona' => 'pasillo-sur', 'modelo' => 'MLX90640']],
 
             // --- Gemelos digitales ---
-            ['name' => 'Twin Temperatura Ambiente',      'device_id' => 'twin-temp',           'type' => 'twin', 'measurement' => 'temperatura_ambiente', 'unit' => '°C',  'min' => 22,    'max' => 32,    'meta' => ['twin_of' => 'sensor-temp-amb']],
-            ['name' => 'Twin Humedad Ambiente',          'device_id' => 'twin-hum',            'type' => 'twin', 'measurement' => 'humedad_ambiente',     'unit' => '%',   'min' => 65,    'max' => 85,    'meta' => ['twin_of' => 'sensor-hum-amb']],
+            ['name' => 'Twin Temperatura Ambiente',      'device_id' => 'twin-temp',           'type' => 'twin', 'measurement' => 'temperatura_ambiente', 'unit' => '°C',  'min' => 22,    'max' => 32,    'rule_name' => 'Twin temp ambiente fuera de rango',   'meta' => ['twin_of' => 'sensor-temp-amb']],
+            ['name' => 'Twin Humedad Ambiente',          'device_id' => 'twin-hum',            'type' => 'twin', 'measurement' => 'humedad_ambiente',     'unit' => '%',   'min' => 65,    'max' => 85,    'rule_name' => 'Twin humedad ambiente fuera de rango','meta' => ['twin_of' => 'sensor-hum-amb']],
         ];
 
         $credentials = [];
@@ -82,6 +82,7 @@ class DatabaseSeeder extends Seeder
                 AlertRule::updateOrCreate(
                     ['device_id' => $device->id, 'measurement' => $d['measurement']],
                     [
+                        'name'          => $d['rule_name'],
                         'min_threshold' => $d['min'],
                         'max_threshold' => $d['max'],
                     ]
