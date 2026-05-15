@@ -14,15 +14,20 @@ use Illuminate\Support\Facades\DB;
 class SimulatorService
 {
     // Perfiles de simulacion por tipo de medicion.
-    // Replica exacta de simulators/profiles.py
+    // Base y amplitude definen la oscilacion sinusoidal, noise el ruido aleatorio.
+    // Los rangos de contexto (Bucaramanga) se aplican via sim_min/sim_max en metadata.
     public const PROFILES = [
-        'temperatura_ambiente' => ['base' => 21.0, 'amplitude' => 4.0,   'noise' => 0.3],
-        'humedad_ambiente'     => ['base' => 67.0, 'amplitude' => 8.0,   'noise' => 1.5],
-        'humedad_sustrato'     => ['base' => 55.0, 'amplitude' => 5.0,   'noise' => 2.0],
-        'co2'                  => ['base' => 700,  'amplitude' => 200,   'noise' => 40],
-        'luminosidad'          => ['base' => 30000,'amplitude' => 25000, 'noise' => 1000],
-        'ph_sustrato'          => ['base' => 6.0,  'amplitude' => 0.2,   'noise' => 0.05],
-        'ec'                   => ['base' => 2.0,  'amplitude' => 0.3,   'noise' => 0.05],
+        'temperatura_ambiente'  => ['base' => 27.0,   'amplitude' => 3.0,     'noise' => 0.3],
+        'humedad_ambiente'      => ['base' => 75.0,   'amplitude' => 8.0,     'noise' => 1.5],
+        'co2'                   => ['base' => 650.0,  'amplitude' => 150.0,   'noise' => 30],
+        'luminosidad'           => ['base' => 37000,  'amplitude' => 15000,   'noise' => 800],
+        'humedad_suelo'         => ['base' => 1.9,    'amplitude' => 0.2,     'noise' => 0.03],
+        'temperatura_suelo'     => ['base' => 24.0,   'amplitude' => 2.0,     'noise' => 0.2],
+        'ph_agua'               => ['base' => 6.7,    'amplitude' => 0.4,     'noise' => 0.05],
+        'corriente_extractor'   => ['base' => 6.5,    'amplitude' => 2.5,     'noise' => 0.3],
+        'color_boton'           => ['base' => 550.0,  'amplitude' => 60.0,    'noise' => 10],
+        'temperatura_foliar'    => ['base' => 29.0,   'amplitude' => 3.0,     'noise' => 0.3],
+        'altura_tallo'          => ['base' => 600.0,  'amplitude' => 300.0,   'noise' => 15],
     ];
 
     // Perfil generico para dispositivos cuyo measurement no tiene perfil especifico.
